@@ -6,8 +6,9 @@ import { useAuth } from "../../context/AuthContext";
 
 const Products = ({category}) => {
   const [products, setProducts] = useState([]);
-  const { signedIn } = useAuth();
+  const { signedIn, currentUser } = useAuth();
 
+  console.log(currentUser?.email)
 
   useEffect(() => {
     fetchProducts();
@@ -21,7 +22,7 @@ const Products = ({category}) => {
       .catch((e) => console.log(e));
   };
 
-  const addItemToCart = (name, price, img, quantity) => {
+  const addItemToCart = (name, price, img, quantity, userEmail) => {
 
     if(signedIn) {
 
@@ -29,7 +30,8 @@ const Products = ({category}) => {
       product: name,
       price: price,
       img: img, 
-      quantity: quantity
+      quantity: quantity,
+      user: userEmail
 
   }
     console.log(data)
@@ -59,7 +61,7 @@ const Products = ({category}) => {
                 <Link to={"/products/" + product.id }><div className="font-semibold text-base hover:underline cursor-pointer">{product.name}</div></Link>
                 <div className="text-sm">{product.description}</div>
                 <div className="pt-1">£{product.price}</div>
-                <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
+                <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1, currentUser?.email)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
               </div>
             )
         )}
@@ -78,7 +80,7 @@ const Products = ({category}) => {
           </Link>
           <div className="text-sm">{product.description}</div>
           <div className="pt-1">£{product.price}</div>
-          <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
+          <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1, currentUser?.email)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
         </div>
       ))}
     </div>

@@ -12,8 +12,8 @@ const pool = new Pool({
 
 //Adds item to cart
 const addToCart = (request, response) => {
-  const { product, price, img, quantity } = request.body;
-  pool.query('INSERT INTO carts (product, price, img, quantity) VALUES ($1, $2, $3, $4) ON CONFLICT (product) DO UPDATE SET quantity = excluded.quantity + 1', [product, price, img, quantity], (error, results) => {
+  const { product, price, img, quantity, user } = request.body;
+  pool.query('INSERT INTO carts (product, price, img, quantity, "user" ) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (product) DO UPDATE SET quantity = excluded.quantity + 1', [product, price, img, quantity, user], (error, results) => {
     if (error) {
       throw error
     }
