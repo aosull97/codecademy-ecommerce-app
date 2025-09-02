@@ -1,1 +1,72 @@
-node_modules/
+# ===================================================================
+# General .gitignore
+#
+# A good starting point for many projects. This file tells Git which
+# files and directories to ignore.
+#
+# For project-specific templates, see:
+# - https://github.com/github/gitignore
+# - https://www.toptal.com/developers/gitignore
+# ===================================================================
+
+# General
+# -------------------------------------------------------------------
+# Logs and temporary files
+*.log
+*.tmp
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE & Editor directories
+# -------------------------------------------------------------------
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (IntelliJ, PyCharm, etc.)
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Build & dependency directories
+# -------------------------------------------------------------------
+# These should generally be installed by a package manager.
+/node_modules/
+/bower_components/
+/vendor/ # For PHP Composer
+
+# Build output
+/build/
+/dist/
+/out/
+/target/ # For Java/Maven/Gradle
+
+# Python specific
+# -------------------------------------------------------------------
+__pycache__/
+.venv/
+venv/
+
+# Environment variables
+# -------------------------------------------------------------------
+# Store sensitive information like API keys and database passwords here.
+# These files should NOT be committed to version control.
+.env
+.env.local
+.env.*.local
+
+# It's good practice to have a non-sensitive example file.
+!*.env.example

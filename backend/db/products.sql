@@ -1,0 +1,14 @@
+INSERT INTO products 
+VALUES 
+    (1, 'Wooden Napoleon Mantel Clock', 80.00, 'A 1930s oak cased Napoleon Hat mantel clock.', 'Living Room', 'https://files.ekmcdn.com/timepieces/images/william-widdop-satin-mahogany-napoleon-mantel-clock-w2645-(3)-33942-p.jpg?v=71780B4B-9487-46BF-8FFF-127F99B50B92', 'Active'),
+    (2, 'Brass Arched Table Lamp', 170.00, 'A classic lamp with a contemorary twist, perfect for any reading corner.', 'Lighting', 'https://www.ruma.co.uk/cdn/shop/files/ruma-lighting-harlowe-antique-brass-metal-arched-arm-task-table-lamp-40256518815957_640x.jpg?v=1702979153', 'Active'),
+    (3, 'Bedside Cabinets', 250.00, 'Late Victorian Pair of Birds-Eye-Maple Antique Bedside Cabinets / Side Cabinets with marble tops.', 'Bedroom', 'https://antiquesworld.co.uk/wp-content/uploads/2014/03/48221.jpg', 'Active'),
+    (4, 'French Candlestick Holder', 35.00, 'Vintage bronze candlestick holder.', 'Dining Room', 'https://rusticreach.com/cdn/shop/products/classic-french-candlestick-holder-rusticreach-482764.jpg?v=1562287224&width=1200', 'Active'),
+    (5, 'Pendant Light Shade', 198.00, 'A ruffled glass shade combined with traditional decorative trimming.', 'Lighting', 'https://rothschildbickers.com/cdn/shop/products/VintageLight_Sargasso_Cypress_257f042a-64b0-4152-90aa-c5923e89c3b8.jpg?v=1681717133', 'Active'),
+    (6, 'Dried Flowers Ceramic Vase', 89.00, 'Darley decorative ceramic vase for flower arrangement.', 'Dining Room', 'https://m.media-amazon.com/images/I/71KNmZGUtoL._AC_UF894,1000_QL80_.jpg', 'Active'),
+    (7, 'Ceramic Butter Dish', 24.00, 'Painted with floral design.', 'Kitchen', 'https://darbnica.shop/cdn/shop/products/IMG_2302.jpg?v=1678791947', 'Active'),
+    (8, 'Brass Mixer Tap', 150.00, 'Single hand antique brass mixer tap.', 'Kitchen', 'https://plumbing4home.com/cdn/shop/files/pepte-kitchen-bathroom-faucet-mixer-tap-deck-mounted-single-handle-antique-brass__28791.1677243336.1280.1280_1024x.jpg?v=1714946513', 'Active'),
+    (9, 'Large Handled Basket', 62.00, 'Large wicker basket with wooden slate base and side handles.', 'Storage', 'https://www.theantiquekitchen.co.uk/upload/images/shopprod/18232/large-antique-basket-with-wooden-slat-base-side-handles-_18232_main_size3.jpg', 'Active'),
+    (10, 'Dressing Table Mirror', 80.00, 'Victorian mahogany dressing table mirror with domed top.', 'Bedroom', 'https://www.mayflyvintage.co.uk/wp-content/uploads/DSC_0691-5_1000PX.jpg', 'Active'),
+    (11, 'Antique Brass Soap Dish', 27.00, 'Solid antique brass soap dish.', 'Bathroom', 'https://img.homelava.com/254190_300.jpg', 'Active'),
+    (12, 'Stoneware Utensil Holder', 30.00, 'French vintage stoneware crock for utensils.', 'Kitchen', 'https://i.pinimg.com/1200x/5b/9c/fd/5b9cfd3b836f0aec977f0be9a7311e3e.jpg', 'Active');
