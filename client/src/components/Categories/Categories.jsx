@@ -1,8 +1,7 @@
 import { useState } from "react";
 import Products from "../Products/Products";
-import PropTypes from 'prop-types';
 
-const Categories = ({signedIn}) => {
+const Categories = () => {
 
     const [category, setCategory] = useState('All')
     const [allSelected, setAllSelected] = useState(true)
@@ -65,15 +64,11 @@ const Categories = ({signedIn}) => {
           </div>
       </nav>
       </div>
-      <Products category={category} signedIn={signedIn} />
+      <Products category={category} />
       </div>
       
     );
 };
-
-Categories.propTypes = {
-  signedIn: PropTypes.bool
-  };
 
 export default Categories;
 

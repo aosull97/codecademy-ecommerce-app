@@ -4,10 +4,9 @@ import CartButton from "../Cart/CartButton";
 import WishListButton from "../WishList/WishListButton";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
-const Header = ({signedIn, prevLocation, productId}) => {
-  console.log(signedIn)
-
+const Header = ({ prevLocation, productId }) => {
   const [numberOfCartItems, setNumberOfCartItems] = useState(0)
 
   useEffect(() => {
@@ -20,6 +19,8 @@ const Header = ({signedIn, prevLocation, productId}) => {
     return () => clearInterval(interval)
   }, [])
 
+  const { signedIn } = useAuth();
+
   if(!signedIn & numberOfCartItems > 0) {
     axios.delete(`http://localhost:3000/cart`)
     .then(response => {
@@ -29,8 +30,6 @@ const Header = ({signedIn, prevLocation, productId}) => {
       console.error('Error deleting cart:', error);
     });
   }
-
-  console.log(numberOfCartItems)
  
   return (
     <div className="flex w-screen justify-between items-center mb-4 pt-4 pb-2">
@@ -42,14 +41,13 @@ const Header = ({signedIn, prevLocation, productId}) => {
       <div className="mr-10 flex space-x-4 border-2 content-center h-10">
         <CartButton numberOfCartItems={numberOfCartItems} />
         {signedIn ? <WishListButton /> : null}
-        <SignInButton signedIn={signedIn} prevLocation={prevLocation} productId={productId}/>
+        <SignInButton prevLocation={prevLocation} productId={productId}/>
       </div>
     </div>
   );
 }
 
 Header.propTypes = {
-  signedIn: PropTypes.bool,
   prevLocation: PropTypes.string,
   productId: PropTypes.number
   };

@@ -1,16 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
+import { useAuth } from "../../context/AuthContext";
 
-const SignInButton = ({signedIn, prevLocation, productId}) => {
+const SignInButton = ({ prevLocation, productId }) => {
 
   const navigate = useNavigate();
-
+  const { signedIn, signOut } = useAuth();
 
  const handleClick = () => {
-   {
-     signedIn
-       ? navigate(-1)
-       : navigate("/login", {
+     if (signedIn) {
+       signOut();
+       navigate('/');
+     } else {
+       navigate("/login", {
            state: { prevLocation: prevLocation, productId: productId },
          });
    }
@@ -30,7 +32,6 @@ const SignInButton = ({signedIn, prevLocation, productId}) => {
 }
 
 SignInButton.propTypes = {
-  signedIn: PropTypes.bool,
   prevLocation: PropTypes.string,
   productId: PropTypes.number
   };

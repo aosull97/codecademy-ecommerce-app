@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-const Products = ({category, signedIn}) => {
+const Products = ({category}) => {
   const [products, setProducts] = useState([]);
-  console.log(signedIn)
+  const { signedIn } = useAuth();
 
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const Products = ({category, signedIn}) => {
 
   const addItemToCart = (name, price, img, quantity) => {
 
-    if(signedIn === true) {
+    if(signedIn) {
 
     const data = {
       product: name,
@@ -72,7 +73,7 @@ const Products = ({category, signedIn}) => {
             src={product.image_url}
             className="w-52 h-52 rounded-sm border-2 border-camel"
           />
-          <Link to={`/products/${product.id}`} state={signedIn}>
+          <Link to={`/products/${product.id}`}>
           <div className="font-semibold text-base hover:underline cursor-pointer">{product.name}</div>
           </Link>
           <div className="text-sm">{product.description}</div>

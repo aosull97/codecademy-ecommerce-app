@@ -70,8 +70,8 @@ const fetchWishlist = (request, response) => {
 
 //Adds item to wishlist
 const addToWishList = (request, response) => {
-  const { product, price, img } = request.body;
-  pool.query('INSERT INTO wishlist (product, price, img) VALUES ($1, $2, $3) ON CONFLICT (product) DO NOTHING', [product, price, img], (error, results) => {
+  const { product, price, img, user } = request.body;
+  pool.query('INSERT INTO wishlist (product, price, img, "user") VALUES ($1, $2, $3, $4) ON CONFLICT (product) DO NOTHING', [product, price, img, user], (error, results) => {
     if (error) {
       throw error
     }

@@ -1,21 +1,16 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header/Header";
 import WishListButton from "../components/WishList/WishListButton";
-import PropTypes from 'prop-types';
+import { useAuth } from "../context/AuthContext";
 
 const ProductDetails = () => {
 
-    const location = useLocation();
-
-    const signedIn = location.state;
-
-    console.log(signedIn)
-
-    ProductDetails.propTypes = {
-        signedIn: PropTypes.node.isRequired,
-        };
+    const { signedIn, currentUser } = useAuth();
+    // You can now access the signed-in user's email like this:
+    const userEmail = currentUser ? currentUser.email : 'Not signed in';
+    console.log('Current user email:', userEmail);
 
     const [product, setProduct] = useState([]);
    
@@ -28,8 +23,6 @@ const ProductDetails = () => {
           })
       }, [])
 
-      console.log(product)
-
       const addItemToCart = (name, price, img, quantity) => {
 
         if(signedIn) {
@@ -41,7 +34,6 @@ const ProductDetails = () => {
           quantity: quantity
     
       }
-        console.log(data)
         axios.post("http://localhost:3000/cart", data).then((response) => {
           console.log(response.status)
         }
@@ -53,17 +45,17 @@ const ProductDetails = () => {
     
     }
 
-    const addItemToWishlist = (name, price, img) => {
+    const addItemToWishlist = (name, price, img, userEmail) => {
 
         if(signedIn) {
 
         const data = {
           product: name,
           price: price,
-          img: img
+          img: img,
+          user: userEmail
     
       }
-        console.log(data)
         axios.post("http://localhost:3000/wishlist", data).then((response) => {
           console.log(response.status)
         }
@@ -80,7 +72,7 @@ const ProductDetails = () => {
   return (
     <div className="bg-orange-50 h-screen font-garamond">
       <div>
-        <Header signedIn={signedIn} prevLocation={'/productdetails'} productId={product.id}/>
+        <Header prevLocation={'/productdetails'} productId={product.id}/>
       </div>
 
       <div className="pt-10 pl-6">
@@ -128,7 +120,7 @@ const ProductDetails = () => {
                     product.name,
                     product.price,
                     product.image_url,
-                    1
+                    "hello"
                   )
                 }
               >
@@ -141,7 +133,9 @@ const ProductDetails = () => {
                   addItemToWishlist(
                     product.name,
                     product.price,
-                    product.image_url
+                    product.image_url,
+                    currentUser.email
+                   
                   )
                 }
               >

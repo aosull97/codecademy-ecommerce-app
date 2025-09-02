@@ -1,20 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import SocialSignIn from "../components/Sign In/SocialSignIn";
 import { useNavigate } from "react-router-dom";
-import PropTypes from 'prop-types';
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const SignIn = () => {
 
   const location = useLocation();
-  const prevLocation = location.state.prevLocation;
-  const prevProductId = location.state.productId;
+  const prevLocation = location.state?.prevLocation;
+  const prevProductId = location.state?.productId;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [signedIn, setSignedIn] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,15 +22,15 @@ const SignIn = () => {
     try {
       const response = await axios.get("http://localhost:3000/users");
 
-      let matchingEmail = response.data.find((user) => user.email === email);
+      let matchingUser = response.data.find((user) => user.email === email);
 
-      if (matchingEmail) {
-        const userHashedPassword =  matchingEmail.pwd_hash;
+      if (matchingUser) {
+        const userHashedPassword =  matchingUser.pwd_hash;
         bcrypt.compare(password, userHashedPassword, (err, isMatch) => {
           if (err) {
             throw err;
           } else if (isMatch) {
-            setSignedIn(true)
+            setCurrentUser(matchingUser);
           } else {
             console.log("Password is incorrect")
             alert("Incorrect credentials")
@@ -47,12 +46,17 @@ const SignIn = () => {
     }
   };
 
-  if (signedIn === true && prevLocation == '/') {
-    navigate('/', {state: signedIn})
-  } else if (signedIn === true && prevLocation == '/productdetails') {
-    navigate(`/products/${prevProductId}`, {state: signedIn})
-  }
+  const { setCurrentUser, signedIn } = useAuth();
 
+  useEffect(() => {
+    if (signedIn) {
+      if (prevLocation === '/productdetails' && prevProductId) {
+        navigate(`/products/${prevProductId}`, { replace: true });
+      } else {
+        navigate(prevLocation || '/', { replace: true });
+      }
+    }
+  }, [signedIn, navigate, prevLocation, prevProductId]);
 
   return (
     <div className="bg-orange-50 font-garamond">
@@ -153,10 +157,5 @@ const SignIn = () => {
     </div>
   );
 };
-
-SignIn.propTypes = {
-  signedIn: PropTypes.bool,
-  prevLocation: PropTypes.string
-  };
 
 export default SignIn;

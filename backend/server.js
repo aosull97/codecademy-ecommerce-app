@@ -94,10 +94,12 @@ app.post('/login', passport.authenticate('local', {failureRedirect: '/'}), ((req
   res.status(201).json(req.user)
 }))
 
-app.get('/logout', ((req, res) => {
-  req.logout()
-  res.status(200).redirect('/')
-}))
+app.get('/logout', (req, res, next) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.status(200).json({ message: 'Logout successful' });
+  });
+});
 
 app.get('/products', db.fetchProducts)
 app.get('/products/:id', db.fetchProductById)
