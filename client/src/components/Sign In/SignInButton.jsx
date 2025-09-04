@@ -10,7 +10,6 @@ const SignInButton = ({ prevLocation, productId }) => {
  const handleClick = () => {
      if (signedIn) {
        signOut();
-       navigate('/');
      } else {
        navigate("/login", {
            state: { prevLocation: prevLocation, productId: productId },

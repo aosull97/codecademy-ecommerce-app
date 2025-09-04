@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express')
-const bodyParser = require("body-parser")
 const app = express()
 const port = 3000
 const db = require('./db/queries');
@@ -26,47 +25,19 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(bodyParser.json())
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}))
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://localhost:3000"
-  )
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, HEAD, PUT, PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
-  )
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
-  )
-
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Private-Network", true);
-  res.setHeader("Access-Control-Max-Age", 7200);
-
-  next()
-})
-
-app.use(cors())
-
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
 const passport = require('passport');
 
 require('dotenv').config();
 require('./passport')
 
-
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -94,10 +65,19 @@ app.post('/login', passport.authenticate('local', {failureRedirect: '/'}), ((req
   res.status(201).json(req.user)
 }))
 
-app.get('/logout', (req, res, next) => {
+app.get('/check-auth', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json(req.user);
+  } else {
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+});
+
+
+app.post('/logout', (req, res, next) => {
   req.logout(function(err) {
     if (err) { return next(err); }
-    res.status(200).json({ message: 'Logout successful' });
+    res.status(200).send('Logout successful');
   });
 });
 

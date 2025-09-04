@@ -5,29 +5,29 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
     const signOut = async () => {
-        try {
-            await axios.get('http://localhost:3000/logout');
-            setCurrentUser(null);
-        } catch (error) {
+    try {
+            await axios.post('http://localhost:3000/logout');
+      setCurrentUser(null);
+    } catch (error) {
             console.error("Error signing out:", error);
         }
     };
 
-    const value = {
-        currentUser,
+  const value = {
+    currentUser,
         setCurrentUser,
         signedIn: !!currentUser,
-        signOut,
-    };
+    signOut,
+  };
 
-    return (
+  return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
-    );
+  );
 };
 
 AuthProvider.propTypes = {

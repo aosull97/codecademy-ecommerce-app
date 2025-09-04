@@ -6,8 +6,7 @@ const db = require('./db/queries')
 passport.use(new LocalStrategy({
     username: 'email',
     password: 'password',
-    passReqToCallback: true,
-    session: false
+    passReqToCallback: true
 },
     async function(req, username, password, callback) {
         let response;
@@ -33,3 +32,8 @@ passport.use(new LocalStrategy({
 passport.serializeUser((user, callback) => {
     return callback(null, user);
 })
+
+passport.deserializeUser((user, callback) => {
+    // In a real app, you would find the user in the database based on the user.customer_id
+    return callback(null, user);
+});

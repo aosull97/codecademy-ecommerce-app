@@ -30,12 +30,12 @@ const ProductDetails = () => {
         const data = {
           product: name,
           price: price,
-          img: img, 
+          img: img,
           quantity: quantity
-    
+
       }
         axios.post("http://localhost:3000/cart", data).then((response) => {
-          console.log(response.status)
+          console.log(response.status, response.data)
         }
       )
 
@@ -120,7 +120,7 @@ const ProductDetails = () => {
                     product.name,
                     product.price,
                     product.image_url,
-                    "hello"
+                    1
                   )
                 }
               >
