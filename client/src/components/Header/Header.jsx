@@ -40,7 +40,8 @@ const Header = ({ prevLocation, productId }) => {
       </div>
       <div className="mr-10 flex space-x-4 border-2 content-center h-10">
         <CartButton numberOfCartItems={numberOfCartItems} />
-        {signedIn ? <WishListButton /> : null}
+        {signedIn ? 
+        <WishListButton /> : null}
         <SignInButton prevLocation={prevLocation} productId={productId}/>
       </div>
     </div>

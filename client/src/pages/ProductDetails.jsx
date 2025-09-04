@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header/Header";
-import WishListButton from "../components/WishList/WishListButton";
 import { useAuth } from "../context/AuthContext";
 
 const ProductDetails = () => {
@@ -36,19 +35,20 @@ const ProductDetails = () => {
     }
   };
 
-  const addItemToWishlist = (name, price, img, userEmail) => {
+  const addItemToWishlist = (name, price, img, email) => {
     if (signedIn) {
       const data = {
         product: name,
         price: price,
         img: img,
-        user: userEmail,
+        email: email,
       };
+      console.log(data);
       axios.post("http://localhost:3000/wishlist", data).then((response) => {
         console.log(response.status);
       });
     } else {
-      alert("Sign in to add to your wish list");
+      alert("Sign in to add item to wishlist");
     }
   };
 
@@ -112,18 +112,30 @@ const ProductDetails = () => {
               </button>
             </div>
             <div className="px-4 h-8 w-8">
-              <button
-                onClick={() =>
-                  addItemToWishlist(
-                    product.name,
-                    product.price,
-                    product.image_url,
-                    currentUser.email
-                  )
-                }
-              >
-                <WishListButton />
-              </button>
+              <div className="bg-orange-50 h-8 w-8 border-camel border-2 text-camel pt-0.5 pl-0.5 rounded-full hover:shadow-lg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#C19A6B"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="size-6"
+                  onClick={() =>
+                    addItemToWishlist(
+                      product.name,
+                      product.price,
+                      product.image_url,
+                      currentUser?.email
+                    )
+                  }
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </div>

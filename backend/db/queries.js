@@ -70,9 +70,10 @@ const modifyCart = (request, response) => {
   )
 }
 
-//Gets wishlist
+//Gets Wishlist
 const fetchWishlist = (request, response) => {
-  pool.query('SELECT * FROM wishlist ORDER BY product ASC', (error, results) => {
+  const {userEmail} = request.params
+  pool.query('SELECT product, price, img FROM wishlist WHERE email=$1 ORDER BY product ASC', [userEmail], (error, results) => {
       if (error) {
           throw error
       }
@@ -80,14 +81,14 @@ const fetchWishlist = (request, response) => {
   })
 }
 
-//Adds item to wishlist
+//Adds item to wish list
 const addToWishList = (request, response) => {
   const { product, price, img, email } = request.body;
-  pool.query('INSERT INTO wishlist (product, price, img, email) VALUES ($1, $2, $3, $4) ON CONFLICT (product) DO NOTHING', [product, price, img, email], (error, results) => {
+  pool.query('INSERT INTO wishlist (product, price, img, email ) VALUES ($1, $2, $3, $4) ON CONFLICT (product) DO NOTHING', [product, price, img, email], (error, results) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`Item added to wishlist`)
+    response.status(201).send(`Item added to cart`)
   })
 }
 
