@@ -9,9 +9,11 @@ import { useAuth } from "../../context/AuthContext";
 const Header = ({ prevLocation, productId }) => {
   const [numberOfCartItems, setNumberOfCartItems] = useState(0)
 
+    const { signedIn, currentUser } = useAuth();
+
   useEffect(() => {
     const interval = setInterval(() => {
-      axios.get("http://localhost:3000/cart")
+      axios.get(`http://localhost:3000/cart/${currentUser?.email}`)
       .then((response) => {
         setNumberOfCartItems(response.data.map(item => item.quantity).reduce((a, b) => a + b, 0) )
       })
@@ -19,7 +21,6 @@ const Header = ({ prevLocation, productId }) => {
     return () => clearInterval(interval)
   }, [])
 
-  const { signedIn } = useAuth();
 
   if(!signedIn & numberOfCartItems > 0) {
     axios.delete(`http://localhost:3000/cart`)

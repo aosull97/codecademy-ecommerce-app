@@ -10,10 +10,21 @@ const pool = new Pool({
   port: process.env.DB_PORT
 })
 
+//Gets cart
+const fetchCart = (request, response) => {
+  const {userEmail} = request.params
+  pool.query('SELECT product, price, img, quantity FROM carts WHERE email=$1 ORDER BY product ASC', [userEmail], (error, results) => {
+      if (error) {
+          throw error
+      }
+      response.status(200).json(results.rows)
+  })
+}
+
 //Adds item to cart
 const addToCart = (request, response) => {
-  const { product, price, img, quantity, user } = request.body;
-  pool.query('INSERT INTO carts (product, price, img, quantity, "user" ) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (product) DO UPDATE SET quantity = excluded.quantity + 1', [product, price, img, quantity, user], (error, results) => {
+  const { product, price, img, quantity, email } = request.body;
+  pool.query('INSERT INTO carts (product, price, img, quantity, email ) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (product) DO UPDATE SET quantity = excluded.quantity + 1', [product, price, img, quantity, email], (error, results) => {
     if (error) {
       throw error
     }
@@ -249,15 +260,6 @@ const createProductInOrder = (request, response) => {
   })
 }
 
-//Gets cart
-const fetchCart = (request, response) => {
-  pool.query('SELECT * FROM carts ORDER BY product ASC', (error, results) => {
-      if (error) {
-          throw error
-      }
-      response.status(200).json(results.rows)
-  })
-}
 
 //Fetches all products in a cart for a userId
 const fetchCartById = (request, response) => {

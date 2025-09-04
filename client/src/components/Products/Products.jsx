@@ -22,7 +22,7 @@ const Products = ({category}) => {
       .catch((e) => console.log(e));
   };
 
-  const addItemToCart = (name, price, img, quantity, userEmail) => {
+  const addItemToCart = (name, price, img, quantity, email) => {
 
     if(signedIn) {
 
@@ -31,7 +31,7 @@ const Products = ({category}) => {
       price: price,
       img: img, 
       quantity: quantity,
-      user: userEmail
+      email: email,
 
   }
     console.log(data)

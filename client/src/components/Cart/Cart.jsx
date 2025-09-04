@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Cart = () => {
 
     const [cartItems, setCartItems] = useState([])
     const navigate = useNavigate()
 
+    const { currentUser } = useAuth();
+
     useEffect(() => {
       const interval = setInterval(() => {
-        axios.get("http://localhost:3000/cart")
+        axios.get(`http://localhost:3000/cart/${currentUser?.email}`)
         .then((response) => {
           setCartItems(response.data)
         })

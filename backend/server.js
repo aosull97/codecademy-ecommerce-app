@@ -75,7 +75,7 @@ app.get('/', (request, response) => {
   })
 
 app.post('/cart', db.addToCart)
-app.get('/cart', db.fetchCart)
+app.get('/cart/:userEmail', db.fetchCart)
 app.delete('/cart', db.clearCart)
 
 app.put('/cart/:id', db.modifyCart)
