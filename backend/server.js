@@ -77,9 +77,8 @@ app.get('/', (request, response) => {
 app.post('/cart', db.addToCart)
 app.get('/cart/:userEmail', db.fetchCart)
 app.delete('/cart', db.clearCart)
-
 app.put('/cart/:id', db.modifyCart)
-app.delete('/cart/:id', db.removeCartItem)
+app.delete('/cart/:userEmail/:product', db.removeCartItem)
 
 app.get('/wishlist/:userEmail', db.fetchWishlist)
 app.post('/wishlist', db.addToWishList)

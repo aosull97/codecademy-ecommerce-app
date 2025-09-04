@@ -10,46 +10,74 @@ const Cart = () => {
 
     const { currentUser } = useAuth();
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        axios.get(`http://localhost:3000/cart/${currentUser?.email}`)
-        .then((response) => {
-          setCartItems(response.data)
-        })
-      }, 1000)
-      return () => clearInterval(interval)
-    }, [])
-
-
-      const removeCartItem = (id) => {
-        const itemId = id;
-  
-        axios.delete(`http://localhost:3000/cart/${itemId}`)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error('Error deleting user:', error);
-        });
+    const fetchCartItems = () => {
+      if (currentUser?.email) {
+        axios.get(`http://localhost:3000/cart/${currentUser.email}`)
+          .then((response) => {
+            setCartItems(response.data);
+          })
+          .catch(error => {
+            console.error('Error fetching cart:', error);
+            setCartItems([]);
+          });
+      } else {
+        setCartItems([]);
       }
+    };
+
+    useEffect(() => {
+      fetchCartItems();
+    }, [currentUser?.email])
+
+
+    const removeCartItem = (productName, userEmail) => {
+      if (!productName || !userEmail) {
+        console.error("Cannot remove item without itemId or user email.");
+        return;
+      }
+      // Use encodeURIComponent to handle special characters in product names
+      axios.delete(`http://localhost:3000/cart/${userEmail}/${encodeURIComponent(productName)}`)
+      .then(response => {
+        console.log(response.data);
+        // Correctly filter the local state by product name
+        setCartItems(prevItems => prevItems.filter(item => item.product !== productName));
+      })
+      .catch(error => {
+        console.error('Error deleting cart item:', error);
+      });
+    }
 
     const goToCheckout = () => {
       navigate("/checkout")
     }
 
+    const changeQuantity = (itemId, newQuantity) => {
+      if (!itemId) {
+        console.error("Cannot change quantity without an item ID.");
+        return;
+      }
 
-    const changeQuantity = (id, newQuantity) => {
-
-      const itemId = id      
-
+      if (newQuantity <= 0) {
+        const itemToRemove = cartItems.find(item => item.id === itemId);
+        if (itemToRemove) {
+          // Pass product name and email to removeCartItem
+          removeCartItem(itemToRemove.product, currentUser?.email);
+        }
+        return;
+      }
         axios.put(`http://localhost:3000/cart/${itemId}`, {
           quantity: newQuantity
         })
         .then((response) => {
-          console.log(response.status + response.data + ` item id ${itemId}`)
+          console.log(response.status, response.data, ` item id ${itemId}`);
+          setCartItems(prevItems =>
+            prevItems.map(item =>
+              item.id === itemId ? { ...item, quantity: newQuantity } : item
+            )
+          );
       })
       .catch(error => {
-          console.log(error + ` quantity ${newQuantity} and id ${itemId}`)
+          console.error(`Error changing quantity for item ${itemId}:`, error);
         })
     }
 
@@ -76,7 +104,7 @@ const Cart = () => {
                     <div>Quantity: {cartItem.quantity}</div>
                     <button onClick={() => changeQuantity(cartItem.id, cartItem.quantity + 1)} className="pl-2">+</button>
                     </div>
-                  <button onClick={() => removeCartItem(cartItem.id)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
+                  <button onClick={() => removeCartItem(cartItem.product, currentUser?.email)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
                 </div>
               </div>
         )

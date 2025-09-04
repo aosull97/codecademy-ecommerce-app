@@ -35,12 +35,13 @@ const addToCart = (request, response) => {
 
 //Removes an item from the cart
 const removeCartItem = (request, response) => {
-  const {id} = request.params
-  pool.query(`DELETE FROM carts WHERE id = $1`, [id], (error, results) => {
+  const {product, userEmail} = request.params
+
+  pool.query(`DELETE FROM carts WHERE product = $1 AND email = $2`, [product, userEmail], (error, results) => {
       if (error) {
           throw error
       }
-      response.status(200).send(`Cart item with id ${id} deleted`)
+      response.status(200).send(`Cart item deleted`)
   })
 }
 
