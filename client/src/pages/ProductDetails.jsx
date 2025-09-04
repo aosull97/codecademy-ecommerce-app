@@ -6,73 +6,56 @@ import WishListButton from "../components/WishList/WishListButton";
 import { useAuth } from "../context/AuthContext";
 
 const ProductDetails = () => {
+  const { signedIn, currentUser } = useAuth();
 
-    const { signedIn, currentUser } = useAuth();
-    // You can now access the signed-in user's email like this:
-    const userEmail = currentUser ? currentUser.email : 'Not signed in';
-    console.log('Current user email:', userEmail);
+  const [product, setProduct] = useState([]);
 
-    const [product, setProduct] = useState([]);
-   
-    const {productId} = useParams();
+  const { productId } = useParams();
 
-    useEffect(() => {
-        axios.get(`http://localhost:3000/products/${productId}`)
-          .then((res) => {
-            setProduct(res.data[0]);
-          })
-      }, [])
+  useEffect(() => {
+    axios.get(`http://localhost:3000/products/${productId}`).then((res) => {
+      setProduct(res.data[0]);
+    });
+  }, []);
 
-      const addItemToCart = (name, price, img, quantity) => {
-
-        if(signedIn) {
-
-        const data = {
-          product: name,
-          price: price,
-          img: img,
-          quantity: quantity
-
-      }
-        axios.post("http://localhost:3000/cart", data).then((response) => {
-          console.log(response.status, response.data)
-        }
-      )
-
+  const addItemToCart = (name, price, img, quantity, email) => {
+    if (signedIn) {
+      const data = {
+        product: name,
+        price: price,
+        img: img,
+        quantity: quantity,
+        email: email,
+      };
+      console.log(data);
+      axios.post("http://localhost:3000/cart", data).then((response) => {
+        console.log(response.status);
+      });
     } else {
-        alert("Sign in to add item to cart")
+      alert("Sign in to add item to cart");
     }
-    
-    }
+  };
 
-    const addItemToWishlist = (name, price, img, userEmail) => {
-
-        if(signedIn) {
-
-        const data = {
-          product: name,
-          price: price,
-          img: img,
-          user: userEmail
-    
-      }
-        axios.post("http://localhost:3000/wishlist", data).then((response) => {
-          console.log(response.status)
-        }
-      )
-
+  const addItemToWishlist = (name, price, img, userEmail) => {
+    if (signedIn) {
+      const data = {
+        product: name,
+        price: price,
+        img: img,
+        user: userEmail,
+      };
+      axios.post("http://localhost:3000/wishlist", data).then((response) => {
+        console.log(response.status);
+      });
     } else {
-        alert("Sign in to add to your wish list")
+      alert("Sign in to add to your wish list");
     }
-    
-    }
-        
-        
-        
+  };
+
   return (
     <div className="bg-orange-50 h-screen font-garamond">
       <div>
-        <Header prevLocation={'/productdetails'} productId={product.id}/>
+        <Header prevLocation={"/productdetails"} productId={product.id} />
       </div>
 
       <div className="pt-10 pl-6">
@@ -97,7 +80,7 @@ const ProductDetails = () => {
           <span className="ml-1 pr-1.5 font-bold text-md">Back</span>
         </a>
       </div>
-      
+
       <div className="flex pt-14 justify-center">
         <div className="p-5">
           <img
@@ -120,7 +103,8 @@ const ProductDetails = () => {
                     product.name,
                     product.price,
                     product.image_url,
-                    1
+                    1,
+                    currentUser?.email
                   )
                 }
               >
@@ -135,7 +119,6 @@ const ProductDetails = () => {
                     product.price,
                     product.image_url,
                     currentUser.email
-                   
                   )
                 }
               >
@@ -147,6 +130,6 @@ const ProductDetails = () => {
       </div>
     </div>
   );
-}
+};
 
-export default ProductDetails
+export default ProductDetails;

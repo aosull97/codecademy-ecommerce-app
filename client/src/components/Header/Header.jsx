@@ -21,7 +21,6 @@ const Header = ({ prevLocation, productId }) => {
     return () => clearInterval(interval)
   }, [])
 
-
   if(!signedIn & numberOfCartItems > 0) {
     axios.delete(`http://localhost:3000/cart`)
     .then(response => {
