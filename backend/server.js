@@ -63,7 +63,7 @@ app.delete('/users/:id', db.removeUser)
 
 app.post('/login', passport.authenticate('local', {failureRedirect: '/'}), ((req, res) => {
   res.status(201).json(req.user)
-}))
+}));
 
 app.get('/check-auth', (req, res) => {
   if (req.isAuthenticated()) {
@@ -71,14 +71,6 @@ app.get('/check-auth', (req, res) => {
   } else {
     res.status(401).json({ message: 'Not authenticated' });
   }
-});
-
-
-app.post('/logout', (req, res, next) => {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.status(200).send('Logout successful');
-  });
 });
 
 app.get('/products', db.fetchProducts)
