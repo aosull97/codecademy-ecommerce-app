@@ -24,7 +24,6 @@ const Header = ({ prevLocation, productId }) => {
         })
         .catch((error) => {
           console.error("Error fetching cart:", error);
-          setNumberOfCartItems(0);
         });
     } else {
       setNumberOfCartItems(0);
@@ -33,7 +32,7 @@ const Header = ({ prevLocation, productId }) => {
 
   useEffect(() => {
     fetchCartItems();
-  }, [currentUser?.email]);
+  }, [numberOfCartItems]);
 
   return (
     <div className="flex w-screen justify-between items-center mb-4 pt-4 pb-2">

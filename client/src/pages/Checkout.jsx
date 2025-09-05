@@ -1,133 +1,135 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
-import { useAuth } from "../context/AuthContext"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
+  const [checkoutItems, setCheckoutItems] = useState([]);
+  const [deliveryTotal, setDeliveryTotal] = useState(3.95);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
-    const [checkoutItems, setCheckoutItems] = useState([])
-    const [deliveryTotal, setDeliveryTotal] = useState(3.95)
-    const [subtotal, setSubtotal] = useState(0)
-    const [total, setTotal] = useState(0)
+  const { currentUser } = useAuth();
 
-    const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        axios.get(`http://localhost:3000/cart/${currentUser?.email}`)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      axios
+        .get(`http://localhost:3000/cart/${currentUser?.email}`)
         .then((response) => {
-          setCheckoutItems(response.data)
-        })
-      }, 1000)
-      return () => clearInterval(interval)
-    }, [])
+          setCheckoutItems(response.data);
+        });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const removeCheckoutItem = (productName, userEmail) => {
-      if (!productName || !userEmail) {
-        console.error("Cannot remove item without itemId or user email.");
-        return;
-      }
-      // Use encodeURIComponent to handle special characters in product names
-      axios.delete(`http://localhost:3000/cart/${userEmail}/${encodeURIComponent(productName)}`)
-      .then(response => {
+  const removeCheckoutItem = (productName, userEmail) => {
+    if (!productName || !userEmail) {
+      console.error("Cannot remove item without itemId or user email.");
+      return;
+    }
+    // Use encodeURIComponent to handle special characters in product names
+    axios
+      .delete(
+        `http://localhost:3000/cart/${userEmail}/${encodeURIComponent(
+          productName
+        )}`
+      )
+      .then((response) => {
         console.log(response.data);
         // Correctly filter the local state by product name
-        setCheckoutItems(prevItems => prevItems.filter(item => item.product !== productName));
+        setCheckoutItems((prevItems) =>
+          prevItems.filter((item) => item.product !== productName)
+        );
       })
-      .catch(error => {
-        console.error('Error deleting cart item:', error);
+      .catch((error) => {
+        console.error("Error deleting cart item:", error);
       });
+  };
+
+  const deliverySelected = () => {
+    if (document.getElementById("standard").checked) {
+      setDeliveryTotal(3.95);
+    } else if (document.getElementById("express").checked) {
+      setDeliveryTotal(5.65);
     }
-    
-   const deliverySelected = () => {
-        if(document.getElementById("standard").checked) {
-            setDeliveryTotal(3.95)
-        } else if(document.getElementById("express").checked) {
-            setDeliveryTotal(5.65)
-        }
-   }
+  };
 
-   const calculateSubtotal = () => {
+  const calculateSubtotal = () => {
+    let totalArray = [];
+    let sum = 0;
 
-    let totalArray = []
-    let sum = 0
-
-    for(let i = 0; i < checkoutItems.length; i++) {
-        let itemQuantity = checkoutItems[i].quantity
-        let itemPrice = checkoutItems[i].price
-        let itemTotal = itemQuantity * itemPrice
-        totalArray.push(itemTotal)
-    }
-
-    for(let y = 0; y < totalArray.length; y++) {
-        sum += totalArray[y];
+    for (let i = 0; i < checkoutItems.length; i++) {
+      let itemQuantity = checkoutItems[i].quantity;
+      let itemPrice = checkoutItems[i].price;
+      let itemTotal = itemQuantity * itemPrice;
+      totalArray.push(itemTotal);
     }
 
-    setSubtotal(sum)
-   }
+    for (let y = 0; y < totalArray.length; y++) {
+      sum += totalArray[y];
+    }
 
-   const calculateTotal = () => {
-    setTotal(deliveryTotal + subtotal)
-   }
+    setSubtotal(sum);
+  };
 
-   useEffect(() => {
-    calculateSubtotal(),
-    deliverySelected(),
-    calculateTotal()
-   })
+  const calculateTotal = () => {
+    setTotal(deliveryTotal + subtotal);
+  };
 
+  useEffect(() => {
+    calculateSubtotal(), deliverySelected(), calculateTotal();
+  });
 
-   const createOrder = (price, email) => {
+  const createOrder = (price) => {
     const data = {
-        order_price: price,
-        order: checkoutItems.map(item => item.product).join(", "),
-        email: email
-    }
+      order_price: price,
+      order: checkoutItems.map((item) => item.product).join(", "),
+      email: currentUser?.email,
+    };
 
-    console.log(data)
+    console.log(data);
 
     axios
-    .post('http://localhost:3000/orders', data)
-    .then(() => {
-      return axios.delete(`http://localhost:3000/cart/${email}`)
-    })
-    .then(() => {
-      navigate("/")
-    })
-    .then(response => {
-        console.log(response.data);
-    })
-    .catch(error => {
-        console.error('Error creating order:', error);
-    });
-   }
-
+      .post("http://localhost:3000/orders", data)
+      .catch((error) => {
+        console.error("Error creating order:", error);
+      })
+      .then(() => {
+        return axios.delete(`http://localhost:3000/cart/${currentUser?.email}`);
+      })
+      .catch((error) => {
+        console.error("Error clearing cart after order:", error);
+      })
+      .then(() => {
+        navigate("/");
+      })
+  };
 
   return (
     <div className="font-garamond min-h-screen bg-orange-50">
       <div className="p-4">
-      <a
-        href="/"
-        className="inline-flex items-center border-2 border-camel py-1 rounded-md text-camel hover:bg-white"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 16 24"
-          stroke="currentColor"
-          className="h-5 w-6"
+        <a
+          href="/"
+          className="inline-flex items-center border-2 border-camel py-1 rounded-md text-camel hover:bg-white"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M7 16l-4-4m0 0l4-4m-4 4h18"
-          ></path>
-        </svg>
-        <span className="ml-1 pr-1.5 font-bold text-md">Back</span>
-      </a>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 16 24"
+            stroke="currentColor"
+            className="h-5 w-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M7 16l-4-4m0 0l4-4m-4 4h18"
+            ></path>
+          </svg>
+          <span className="ml-1 pr-1.5 font-bold text-md">Back</span>
+        </a>
       </div>
       <div className="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
         <div className="px-4 pt-8">
@@ -149,7 +151,12 @@ const Checkout = () => {
                   <div className="pt-1">£{checkoutItem.price}</div>
                   <div className="pb-1">Quantity: {checkoutItem.quantity}</div>
                   <button
-                    onClick={() => removeCheckoutItem(checkoutItem.product, currentUser?.email)}
+                    onClick={() =>
+                      removeCheckoutItem(
+                        checkoutItem.product,
+                        currentUser?.email
+                      )
+                    }
                     className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
                   >
                     Remove
@@ -374,15 +381,16 @@ const Checkout = () => {
               <p className="text-2xl font-semibold text-gray-900">£{total}</p>
             </div>
           </div>
-          <button 
-            onClick={() => createOrder(total, currentUser?.email)}
-            className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white">
+          <button
+            onClick={() => createOrder(total)}
+            className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white"
+          >
             Place Order
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Checkout
+export default Checkout;

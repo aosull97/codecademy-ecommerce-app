@@ -47,13 +47,16 @@ const removeCartItem = (request, response) => {
 
 //Clears cart
 const clearCart = (request, response) => {
-  const {email} = request.body
-  pool.query(`TRUNCATE carts`, (error, results) => {
-    if(error) {
-      throw error
-    }
+  const {userEmail} = request.params
+  pool.query(`DELETE FROM carts WHERE email=$1`, [userEmail], (error, results) => {
+      if (error) {
+          console.error(`Error deleting ${userEmail}'s cart: `, error);
+          return response.status(500).send('Internal Server Error');
+      }
+      response.status(200).send(`User ${userEmail}'s cart deleted`);
   })
 }
+
 
 //Makes changes to an existing user
 const modifyCart = (request, response) => {
