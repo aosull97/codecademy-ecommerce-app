@@ -93,6 +93,22 @@ const addToWishList = (request, response) => {
   })
 }
 
+//Removes an item from the cart
+const removeWishListItem = (request, response) => {
+  const {product, userEmail} = request.params
+
+  pool.query(`DELETE FROM wishlist WHERE product = $1 AND email = $2`, [product, userEmail], (error, results) => {
+      if (error) {
+          console.error('Error deleting wishlist item:', error);
+          return response.status(500).send('Internal Server Error');
+      }
+      if (results.rowCount === 0) {
+        return response.status(404).send('Wish list item not found.');
+      }
+      response.status(200).send(`Wish list item deleted`);
+  })
+}
+
 //Fetch details of specific product
 const fetchProductById = (request, response) => {
   const {id} = request.params
@@ -341,5 +357,6 @@ module.exports = {
   createProductInCart,
   modifyCart,
   removeCartItem,
-  removeCart
+  removeCart,
+  removeWishListItem,
 }

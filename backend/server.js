@@ -82,6 +82,7 @@ app.delete('/cart/:userEmail/:product', db.removeCartItem)
 
 app.get('/wishlist/:userEmail', db.fetchWishlist)
 app.post('/wishlist', db.addToWishList)
+app.delete('/wishlist/:userEmail/:product', db.removeWishListItem)
 
 app.get('/users', db.fetchUsers)
 app.get('/users/:id', db.fetchUserById)

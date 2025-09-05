@@ -6,30 +6,49 @@ const WishList = () => {
 
     const [wishlistItems, setWishlistItems] = useState([])
 
-    const { currentUser } = useAuth();
+    const { currentUser, signedIn } = useAuth();
+
+     const fetchWishlistItems = () => {
+      if (currentUser?.email) {
+        axios.get(`http://localhost:3000/wishlist/${currentUser.email}`)
+          .then((response) => {
+            setWishlistItems(response.data);
+          })
+          .catch(error => {
+            console.error('Error fetching cart:', error);
+            setWishlistItems([]);
+          });
+      } else {
+        setWishlistItems([]);
+      }
+    };
 
     useEffect(() => {
-      const interval = setInterval(() => {
-        axios.get(`http://localhost:3000/wishlist/${currentUser?.email}`)
-        .then((response) => {
-          setWishlistItems(response.data)
-        })
-      }, 1000)
-      return () => clearInterval(interval)
-    }, [])
+      fetchWishlistItems();
+    }, [currentUser?.email])
 
 
-      const removeWishListItem = (id) => {
-        const itemId = id;
-  
-        axios.delete(`http://localhost:3000/wishlist/${itemId}`)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error('Error deleting user:', error);
-        });
+    const removeWishListItem = (productName, userEmail) => {
+        if(signedIn) {
+      if (!productName || !userEmail) {
+        console.error("Cannot remove item without itemId or user email.");
+        return;
       }
+      // Use encodeURIComponent to handle special characters in product names
+      axios.delete(`http://localhost:3000/wishlist/${userEmail}/${encodeURIComponent(productName)}`)
+      .then(response => {
+        console.log(response.data);
+        // Correctly filter the local state by product name
+        setWishlistItems(prevItems => prevItems.filter(item => item.product !== productName));
+      })
+      .catch(error => {
+        console.error('Error deleting wish list item:', error);
+      });
+    } else {
+        alert("Sign in to remove item from wish list")
+    }}
+
+
 
     
 
@@ -49,7 +68,7 @@ const WishList = () => {
                 <div className="flex flex-col items-center">
                   <div className="font-semibold text-base">{wishListItem.product}</div>
                   <div className="pt-1">£{wishListItem.price}</div>
-                  <button onClick={() => removeWishListItem(wishListItem.id)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
+                  <button onClick={() => removeWishListItem(wishListItem.product, currentUser?.email)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
                 </div>
               </div>
         )
