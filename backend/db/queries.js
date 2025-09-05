@@ -14,7 +14,7 @@ const pool = new Pool({
 //Gets cart
 const fetchCart = (request, response) => {
   const {userEmail} = request.params
-  pool.query('SELECT product, price, img, quantity FROM carts WHERE email=$1 ORDER BY product ASC', [userEmail], (error, results) => {
+  pool.query('SELECT id, product, price, img, quantity FROM carts WHERE email=$1 ORDER BY product ASC', [userEmail], (error, results) => {
       if (error) {
           throw error
       }
@@ -25,7 +25,7 @@ const fetchCart = (request, response) => {
 //Adds item to cart
 const addToCart = (request, response) => {
   const { product, price, img, quantity, email } = request.body;
-  pool.query('INSERT INTO carts (product, price, img, quantity, email ) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (product) DO UPDATE SET quantity = excluded.quantity + 1', [product, price, img, quantity, email], (error, results) => {
+  pool.query('INSERT INTO carts (product, price, img, quantity, email ) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (product, email) DO UPDATE SET quantity = carts.quantity + 1 RETURNING *', [product, price, img, quantity, email], (error, results) => {
     if (error) {
       throw error
     }

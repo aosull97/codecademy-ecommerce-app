@@ -52,6 +52,7 @@ const Cart = () => {
     }
 
     const changeQuantity = (itemId, newQuantity) => {
+      console.log(itemId, newQuantity)
       if (!itemId) {
         console.error("Cannot change quantity without an item ID.");
         return;
@@ -60,7 +61,6 @@ const Cart = () => {
       if (newQuantity <= 0) {
         const itemToRemove = cartItems.find(item => item.id === itemId);
         if (itemToRemove) {
-          // Pass product name and email to removeCartItem
           removeCartItem(itemToRemove.product, currentUser?.email);
         }
         return;

@@ -32,8 +32,12 @@ CREATE TABLE "products" (
 
 CREATE TABLE "carts" (
   "id" SERIAL PRIMARY KEY,
-  "product" text,
-  "price" int
+  "product" TEXT,
+  "price" DECIMAL(10, 2),
+  "img" TEXT,
+  "quantity" INTEGER,
+  "email" VARCHAR(100),
+  UNIQUE(product, email)
 );
 
 CREATE TABLE "cart_products" (
@@ -47,8 +51,6 @@ ALTER TABLE "order_products" ADD FOREIGN KEY ("order_id") REFERENCES "orders" ("
 ALTER TABLE "order_products" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
 ALTER TABLE "orders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "carts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "cart_products" ADD FOREIGN KEY ("cart_id") REFERENCES "carts" ("id");
 
