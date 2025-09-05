@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import CartButton from "../Cart/CartButton";
 import WishListButton from "../WishList/WishListButton";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 const Header = ({ prevLocation, productId }) => {
@@ -11,7 +11,7 @@ const Header = ({ prevLocation, productId }) => {
 
   const { signedIn, currentUser } = useAuth();
 
-  const fetchCartItems = () => {
+  const fetchCartItems = useCallback(() => {
     if (currentUser?.email) {
       axios
         .get(`http://localhost:3000/cart/${currentUser.email}`)
@@ -24,15 +24,18 @@ const Header = ({ prevLocation, productId }) => {
         })
         .catch((error) => {
           console.error("Error fetching cart:", error);
+          setNumberOfCartItems(0);
         });
     } else {
       setNumberOfCartItems(0);
     }
-  };
+  }, [currentUser?.email]);
 
   useEffect(() => {
-    fetchCartItems();
-  }, [numberOfCartItems]);
+    fetchCartItems(); // Fetch immediately on load
+    const interval = setInterval(fetchCartItems, 1000); // Poll for new data every second
+    return () => clearInterval(interval); // Clean up the interval when component is removed
+  }, [fetchCartItems]);
 
   return (
     <div className="flex w-screen justify-between items-center mb-4 pt-4 pb-2">
