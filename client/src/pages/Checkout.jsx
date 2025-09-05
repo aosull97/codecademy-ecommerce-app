@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { useAuth } from "../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 const Checkout = () => {
 
@@ -10,6 +11,8 @@ const Checkout = () => {
     const [total, setTotal] = useState(0)
 
     const { currentUser } = useAuth();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -85,7 +88,14 @@ const Checkout = () => {
 
     console.log(data)
 
-    axios.post('http://localhost:3000/orders', data)
+    axios
+    .post('http://localhost:3000/orders', data)
+    .then(() => {
+      return axios.delete(`http://localhost:3000/cart/${email}`)
+    })
+    .then(() => {
+      navigate("/")
+    })
     .then(response => {
         console.log(response.data);
     })
@@ -93,8 +103,6 @@ const Checkout = () => {
         console.error('Error creating order:', error);
     });
    }
-
-
 
 
   return (

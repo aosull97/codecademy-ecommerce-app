@@ -47,6 +47,7 @@ const removeCartItem = (request, response) => {
 
 //Clears cart
 const clearCart = (request, response) => {
+  const {email} = request.body
   pool.query(`TRUNCATE carts`, (error, results) => {
     if(error) {
       throw error

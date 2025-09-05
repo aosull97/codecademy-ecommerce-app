@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 
 function Home() {
   const { currentUser } = useAuth();
-  // You can now access the signed-in user's email like this:
   console.log(currentUser?.email);
 
   return (
