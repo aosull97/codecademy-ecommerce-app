@@ -108,6 +108,7 @@ app.put('/products/:id', db.modifyProduct)
 app.delete('/products/:id', db.removeProduct)
 
 app.get('/orders', db.fetchOrders)
+app.post('/orders', db.createOrder)
 app.get('/orders/:id', db.fetchOrderById)
 app.post('/orderProducts', db.createProductInOrder)
 

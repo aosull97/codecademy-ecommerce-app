@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { useAuth } from "../context/AuthContext"
 
 const Checkout = () => {
 
@@ -8,9 +9,11 @@ const Checkout = () => {
     const [subtotal, setSubtotal] = useState(0)
     const [total, setTotal] = useState(0)
 
+    const { currentUser } = useAuth();
+
     useEffect(() => {
       const interval = setInterval(() => {
-        axios.get("http://localhost:3000/cart")
+        axios.get(`http://localhost:3000/cart/${currentUser?.email}`)
         .then((response) => {
           setCheckoutItems(response.data)
         })
@@ -24,6 +27,7 @@ const Checkout = () => {
         axios.delete(`http://localhost:3000/cart/${itemId}`)
         .then(response => {
           console.log(response.data);
+
         })
         .catch(error => {
           console.error('Error deleting user:', error);
@@ -68,7 +72,23 @@ const Checkout = () => {
    })
 
 
-   
+   const createOrder = (price, email) => {
+    const data = {
+        order_price: price,
+        order: checkoutItems.map(item => item.product).join(", "),
+        email: email
+    }
+
+    console.log(data)
+
+    axios.post('http://localhost:3000/orders', data)
+    .then(response => {
+        console.log(response.data);
+    })
+    .catch(error => {
+        console.error('Error creating order:', error);
+    });
+   }
 
 
 
@@ -117,7 +137,7 @@ const Checkout = () => {
                   <div className="pt-1">£{checkoutItem.price}</div>
                   <div className="pb-1">Quantity: {checkoutItem.quantity}</div>
                   <button
-                    onClick={() => removeCheckoutItem(checkoutItem.id)}
+                    onClick={() => removeCheckoutItem(checkoutItem.product)}
                     className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
                   >
                     Remove
@@ -342,7 +362,9 @@ const Checkout = () => {
               <p className="text-2xl font-semibold text-gray-900">£{total}</p>
             </div>
           </div>
-          <button className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white">
+          <button 
+            onClick={() => createOrder(total, currentUser?.email)}
+            className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white">
             Place Order
           </button>
         </div>

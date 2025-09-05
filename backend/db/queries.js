@@ -252,6 +252,19 @@ const fetchOrders = (request, response) => {
   })
 }
 
+//Creates a new order
+const createOrder = (request, response) => {
+  const {order_price, order, email} = request.body
+  
+  pool.query('INSERT INTO orders (order_price, "order", email) VALUES ($1, $2, $3) RETURNING *', [order_price, order, email], (error, results) => {
+     if (error) {
+          console.error('Error creating order:', error);
+          return response.status(500).send('Internal Server Error');
+    }
+    response.status(201).send(`Order created`)
+  })
+}
+
 //Fetches an order by it's Id
 const fetchOrderById = (request, response) => {
   const {id} = request.body
@@ -359,4 +372,5 @@ module.exports = {
   removeCartItem,
   removeCart,
   removeWishListItem,
+  createOrder,
 }
