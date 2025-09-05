@@ -21,18 +21,22 @@ const Checkout = () => {
       return () => clearInterval(interval)
     }, [])
 
-    const removeCheckoutItem = (id) => {
-        const itemId = id;
-  
-        axios.delete(`http://localhost:3000/cart/${itemId}`)
-        .then(response => {
-          console.log(response.data);
-
-        })
-        .catch(error => {
-          console.error('Error deleting user:', error);
-        });
+    const removeCheckoutItem = (productName, userEmail) => {
+      if (!productName || !userEmail) {
+        console.error("Cannot remove item without itemId or user email.");
+        return;
       }
+      // Use encodeURIComponent to handle special characters in product names
+      axios.delete(`http://localhost:3000/cart/${userEmail}/${encodeURIComponent(productName)}`)
+      .then(response => {
+        console.log(response.data);
+        // Correctly filter the local state by product name
+        setCheckoutItems(prevItems => prevItems.filter(item => item.product !== productName));
+      })
+      .catch(error => {
+        console.error('Error deleting cart item:', error);
+      });
+    }
     
    const deliverySelected = () => {
         if(document.getElementById("standard").checked) {
@@ -137,7 +141,7 @@ const Checkout = () => {
                   <div className="pt-1">£{checkoutItem.price}</div>
                   <div className="pb-1">Quantity: {checkoutItem.quantity}</div>
                   <button
-                    onClick={() => removeCheckoutItem(checkoutItem.product)}
+                    onClick={() => removeCheckoutItem(checkoutItem.product, currentUser?.email)}
                     className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
                   >
                     Remove
