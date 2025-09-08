@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Checkout = () => {
   const [checkoutItems, setCheckoutItems] = useState([]);
   const [deliveryTotal, setDeliveryTotal] = useState(3.95);
+  const [deliveryMethod, setDeliveryMethod] = useState("standard");
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
 
@@ -14,16 +15,16 @@ const Checkout = () => {
 
   const navigate = useNavigate();
 
+  // Fetch cart items only once when the component mounts or the user changes.
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (currentUser?.email) {
       axios
         .get(`http://localhost:3000/cart/${currentUser?.email}`)
         .then((response) => {
           setCheckoutItems(response.data);
         });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    }
+  }, [currentUser?.email]);
 
   const removeCheckoutItem = (productName, userEmail) => {
     if (!productName || !userEmail) {
@@ -49,39 +50,30 @@ const Checkout = () => {
       });
   };
 
-  const deliverySelected = () => {
-    if (document.getElementById("standard").checked) {
+  // Update delivery cost when the delivery method changes
+  useEffect(() => {
+    if (deliveryMethod === "standard") {
       setDeliveryTotal(3.95);
-    } else if (document.getElementById("express").checked) {
+    } else if (deliveryMethod === "express") {
       setDeliveryTotal(5.65);
     }
-  };
+  }, [deliveryMethod]);
 
-  const calculateSubtotal = () => {
-    let totalArray = [];
+  // Recalculate subtotal whenever the items in the checkout change
+  useEffect(() => {
     let sum = 0;
-
     for (let i = 0; i < checkoutItems.length; i++) {
       let itemQuantity = checkoutItems[i].quantity;
       let itemPrice = checkoutItems[i].price;
-      let itemTotal = itemQuantity * itemPrice;
-      totalArray.push(itemTotal);
+      sum += itemQuantity * itemPrice;
     }
-
-    for (let y = 0; y < totalArray.length; y++) {
-      sum += totalArray[y];
-    }
-
     setSubtotal(sum);
-  };
+  }, [checkoutItems]);
 
-  const calculateTotal = () => {
-    setTotal(deliveryTotal + subtotal);
-  };
-
+  // Recalculate the final total when the subtotal or delivery cost changes
   useEffect(() => {
-    calculateSubtotal(), deliverySelected(), calculateTotal();
-  });
+    setTotal(deliveryTotal + subtotal);
+  }, [deliveryTotal, subtotal]);
 
   const createOrder = (price) => {
     const data = {
@@ -106,6 +98,12 @@ const Checkout = () => {
       .then(() => {
         navigate("/");
       })
+  };
+
+  const handlePlaceOrder = (e) => {
+    // Prevent the default form submission which causes a page reload.
+    e.preventDefault();
+    createOrder(total);
   };
 
   return (
@@ -175,6 +173,7 @@ const Checkout = () => {
                 id="standard"
                 type="radio"
                 name="radio"
+                onChange={() => setDeliveryMethod("standard")}
                 defaultChecked
               />
               <span className="peer-checked:border-camel absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-white bg-inherit"></span>
@@ -203,6 +202,7 @@ const Checkout = () => {
                 id="express"
                 type="radio"
                 name="radio"
+                onChange={() => setDeliveryMethod("express")}
               />
               <span className="peer-checked:border-camel absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-white bg-inherit"></span>
               <label
@@ -226,12 +226,13 @@ const Checkout = () => {
             </div>
           </form>
         </div>
+        
         <div className="mt-10 rounded-lg bg-white px-4 pt-8 lg:mt-0">
           <p className="text-xl font-medium">Payment Details</p>
           <p className="text-gray-800">
             Complete your order by providing your payment details.
           </p>
-          <div className="">
+          <form onSubmit={handlePlaceOrder} className="">
             <label
               htmlFor="email"
               className="mt-4 mb-2 block text-sm font-medium"
@@ -241,6 +242,7 @@ const Checkout = () => {
             <div className="relative">
               <input
                 type="text"
+                required={true}
                 id="email"
                 name="email"
                 className="w-full rounded-md border border-gray-300 px-4 py-3 pl-11 text-sm outline-almond "
@@ -272,6 +274,7 @@ const Checkout = () => {
             <div className="relative">
               <input
                 type="text"
+                required={true}
                 id="card-holder"
                 name="card-holder"
                 className="w-full rounded-md border border-gray-300 px-4 py-3 pl-11 text-sm uppercase shadow-sm outline-almond"
@@ -304,6 +307,7 @@ const Checkout = () => {
               <div className="relative w-7/12 flex-shrink-0">
                 <input
                   type="text"
+                  required={true}
                   id="card-no"
                   name="card-no"
                   className="w-full rounded-md border border-gray-300 px-2 py-3 pl-11 text-sm shadow-sm outline-almond"
@@ -346,6 +350,7 @@ const Checkout = () => {
               <div className="relative flex-shrink-0 sm:w-7/12">
                 <input
                   type="text"
+                  required={true}
                   id="billing-address"
                   name="billing-address"
                   className="w-full rounded-md border border-gray-300 px-4 py-3 pl-11 text-sm shadow-sm outline-almond"
@@ -381,13 +386,13 @@ const Checkout = () => {
               <p className="text-sm font-medium text-gray-900">Total</p>
               <p className="text-2xl font-semibold text-gray-900">£{total}</p>
             </div>
-          </div>
-          <button
-            onClick={() => createOrder(total)}
-            className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white"
-          >
-            Place Order
-          </button>
+            <button
+              type="submit"
+              className="mt-4 mb-8 w-full rounded-md bg-camel px-6 py-3 font-medium text-white hover:bg-coffee focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coffee"
+            >
+              Place Order
+            </button>
+          </form>
         </div>
       </div>
     </div>

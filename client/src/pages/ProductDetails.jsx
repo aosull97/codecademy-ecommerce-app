@@ -16,8 +16,8 @@ const ProductDetails = () => {
   useEffect(() => {
     axios.get(`http://localhost:3000/products/${productId}`).then((res) => {
       setProduct(res.data[0]);
-    });
-  }, []);
+    }).catch(error => console.error("Error fetching product details:", error));
+  }, [productId]); // Add productId to the dependency array
 
   const addItemToCart = (name, price, img, quantity, email) => {
     if (signedIn) {

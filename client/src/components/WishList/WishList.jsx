@@ -7,7 +7,6 @@ const WishList = () => {
     const [wishlistItems, setWishlistItems] = useState([])
 
     const { currentUser, signedIn } = useAuth();
-    axios.defaults.withCredentials = true;
 
      const fetchWishlistItems = () => {
       if (currentUser?.email) {

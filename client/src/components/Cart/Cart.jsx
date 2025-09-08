@@ -28,7 +28,7 @@ const Cart = () => {
 
     useEffect(() => {
       fetchCartItems();
-    }, [cartItems])
+    }, [currentUser?.email])
 
 
     const removeCartItem = (productName, userEmail) => {
