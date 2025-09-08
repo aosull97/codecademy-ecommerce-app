@@ -9,6 +9,7 @@ const Products = ({category}) => {
   const { signedIn, currentUser } = useAuth();
 
   console.log(currentUser?.email)
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     fetchProducts();

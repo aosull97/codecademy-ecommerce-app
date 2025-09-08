@@ -10,6 +10,7 @@ const Header = ({ prevLocation, productId }) => {
   const [numberOfCartItems, setNumberOfCartItems] = useState(0);
 
   const { signedIn, currentUser } = useAuth();
+  axios.defaults.withCredentials = true;
 
   const fetchCartItems = useCallback(() => {
     if (currentUser?.email) {

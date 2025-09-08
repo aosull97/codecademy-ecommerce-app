@@ -1,34 +1,49 @@
-import { createContext, useState, useContext } from "react";
-import PropTypes from "prop-types";
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true); // To prevent rendering children before check is complete
+
+  axios.defaults.withCredentials = true;
+
+  const checkSession = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/auth/check-session');
+      if (response.data.user) {
+        setCurrentUser(response.data.user);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      console.error('Not authenticated');
+      setCurrentUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
 
   const signOut = async () => {
     try {
+      await axios.get('http://localhost:3000/logout');
       setCurrentUser(null);
-      console.log("User signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
 
-  const value = {
-    currentUser,
-    setCurrentUser,
-    signedIn: !!currentUser,
-    signOut,
-  };
+  const value = { currentUser, setCurrentUser, signedIn: !!currentUser, signOut };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export const useAuth = () => {
-  return useContext(AuthContext);
+  // Render children only after the initial session check is complete
+  return (
+    <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+  );
 };

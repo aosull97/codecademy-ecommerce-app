@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 const ProductDetails = () => {
   const { signedIn, currentUser } = useAuth();
+  axios.defaults.withCredentials = true;
 
   const [product, setProduct] = useState([]);
 

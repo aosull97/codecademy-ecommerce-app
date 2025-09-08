@@ -13,11 +13,6 @@ const AccountButton = () => {
     setAccountMenuOpen(!accountMenuOpen);
   };
 
-  const handleSignOut = () => {
-    signOut();
-    setAccountMenuOpen(false);
-  };
-
   return (
     <div className="">
       <button onClick={handleAccountClick} className="">
@@ -27,6 +22,7 @@ const AccountButton = () => {
         <div className="bg-orange-50 border-2 border-coffee rounded-md p-2 absolute right-5 w-32 text-center font-garamond text-camel space-y-2 shadow-lg flex flex-col">
           <button
             onClick={() => {
+              setAccountMenuOpen(false);
               navigate("/orders");
             }}
             className="hover:underline hover:text-coffee"
@@ -34,7 +30,7 @@ const AccountButton = () => {
             Orders
           </button>
           <button
-            onClick={handleSignOut}
+            onClick={signOut}
             className="hover:underline hover:text-coffee"
           >
             Log Out

@@ -7,6 +7,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
 
   const { currentUser } = useAuth();
+  axios.defaults.withCredentials = true;
 
   const fetchOrders = () => {
     if (currentUser?.email) {

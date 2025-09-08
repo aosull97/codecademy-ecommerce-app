@@ -10,6 +10,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
 
   const { currentUser } = useAuth();
+  axios.defaults.withCredentials = true;
 
   const navigate = useNavigate();
 

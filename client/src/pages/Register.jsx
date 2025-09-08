@@ -1,35 +1,44 @@
 import { useState } from "react"
 import axios from 'axios'
 import { useNavigate } from "react-router-dom"
-import bcrypt from 'bcryptjs'
-
 
 const Register = () => {
     const navigate = useNavigate()
+    axios.defaults.withCredentials = true;
 
     const [userInfo, setUserInfo] = useState({
         fullName: '',
         email: '',
         password: ""
-    })
+    });
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleInput = (e) => {
         e.persist();
         setUserInfo({...userInfo, [e.target.name]: e.target.value})
     }
 
-    const saveUser = (e) => {
-          const hashedPassword = bcrypt.hashSync(userInfo.password, 10)
+    const saveUser = async (e) => {
           e.preventDefault()
+
+          if (userInfo.password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+
           const data = {
               full_name: userInfo.fullName,
               email: userInfo.email,
-              pwd_hash: hashedPassword
+              password: userInfo.password // Send the plain password
           }
-          axios.post(`http://localhost:3000/users`, data).then(
-              alert('User Added')
-          )
-          navigate("/login");
+          try {
+            await axios.post(`http://localhost:3000/users`, data);
+            alert('User Added');
+            navigate("/login");
+          } catch (error) {
+            console.error("Registration failed:", error.response?.data || error.message);
+            alert("Registration failed. The email might already be in use.");
+          }
 
       }
       
@@ -63,7 +72,7 @@ const Register = () => {
 
             <div>
               <div className="relative flex items-center">
-                <input name="password" type="password" required value={userInfo.password} onChange={handleInput} className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-almond" placeholder="Confirm password" />
+                <input name="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-almond" placeholder="Confirm password" />
               </div>
             </div>
 

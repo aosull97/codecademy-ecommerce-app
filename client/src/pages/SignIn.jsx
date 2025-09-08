@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import SocialSignIn from "../components/Sign In/SocialSignIn";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -11,44 +10,28 @@ const SignIn = () => {
   const location = useLocation();
   const prevLocation = location.state?.prevLocation;
   const prevProductId = location.state?.productId;
+  axios.defaults.withCredentials = true;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
+  const { setCurrentUser, signedIn } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.get("http://localhost:3000/users");
-
-      let matchingUser = response.data.find((user) => user.email === email);
-
-      if (matchingUser) {
-        const userHashedPassword =  matchingUser.pwd_hash;
-        bcrypt.compare(password, userHashedPassword, (err, isMatch) => {
-          if (err) {
-            throw err;
-          } else if (isMatch) {
-            setCurrentUser(matchingUser);
-          } else {
-            console.log("Password is incorrect")
-            alert("Incorrect credentials")
-          }
-        })
-      } else {
-        console.log("Incorrect email")
-        alert("This email is not registered")
-      }
-
+      const response = await axios.post("http://localhost:3000/login", {
+        email: email,
+        password: password,
+      });
+      setCurrentUser(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Login failed:", error);
+      alert("Incorrect credentials. Please try again.");
     }
   };
-
-  const { setCurrentUser, signedIn } = useAuth();
 
   useEffect(() => {
     if (signedIn) {

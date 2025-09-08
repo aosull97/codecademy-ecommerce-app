@@ -9,6 +9,7 @@ const Cart = () => {
     const navigate = useNavigate()
 
     const { currentUser } = useAuth();
+    axios.defaults.withCredentials = true;
 
     const fetchCartItems = () => {
       if (currentUser?.email) {
@@ -27,7 +28,7 @@ const Cart = () => {
 
     useEffect(() => {
       fetchCartItems();
-    }, [currentUser?.email])
+    }, [cartItems])
 
 
     const removeCartItem = (productName, userEmail) => {
