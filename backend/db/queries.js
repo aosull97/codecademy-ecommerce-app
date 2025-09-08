@@ -246,15 +246,17 @@ const removeProduct = (request, response) => {
 }
 
 
-//Gets all orders
+//Gets users orders
 const fetchOrders = (request, response) => {
-  pool.query('SELECT * FROM orders', (error, results) => {
+  const {userEmail} = request.params
+  pool.query('SELECT id, status, created_at, order_price, "order" FROM orders WHERE email=$1 ORDER BY created_at ASC', [userEmail], (error, results) => {
       if (error) {
           throw error
       }
       response.status(200).json(results.rows)
   })
 }
+
 
 //Creates a new order
 const createOrder = (request, response) => {

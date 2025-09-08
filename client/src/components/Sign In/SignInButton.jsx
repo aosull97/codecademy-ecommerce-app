@@ -1,38 +1,41 @@
 import { useNavigate } from "react-router-dom";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { useAuth } from "../../context/AuthContext";
+import AccountButton from "../Account/AccountButton";
 
 const SignInButton = ({ prevLocation, productId }) => {
-
   const navigate = useNavigate();
-  const { signedIn, signOut } = useAuth();
+  const { signedIn } = useAuth();
 
- const handleClick = () => {
-     if (signedIn) {
-       signOut();
-     } else {
-       navigate("/login", {
-           state: { prevLocation: prevLocation, productId: productId },
-         });
-   }
- };
+  const handleClick = () => {
+    if (signedIn) {
+      null;
+    } else {
+      navigate("/login", {
+        state: { prevLocation: prevLocation, productId: productId },
+      });
+    }
+  };
 
   return (
     <div>
+      {signedIn ? (
+        <AccountButton />
+      ) : (
         <button
           className="border-2 p-1 rounded-lg font-garamond font-semibold border-almond hover:bg-almond"
           onClick={handleClick}
         >
-         {signedIn ? 'Log Out' : 'Sign In'}
+          Sign In
         </button>
+      )}
     </div>
   );
-
-}
+};
 
 SignInButton.propTypes = {
   prevLocation: PropTypes.string,
-  productId: PropTypes.number
-  };
+  productId: PropTypes.number,
+};
 
-export default SignInButton
+export default SignInButton;

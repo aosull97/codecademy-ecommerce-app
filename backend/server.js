@@ -90,6 +90,12 @@ app.post('/users', db.createUser)
 app.put('/users/:id', db.modifyUser)
 app.delete('/users/:id', db.removeUser)
 
+
+app.get('/orders/:userEmail', db.fetchOrders)
+app.post('/orders', db.createOrder)
+app.get('/orders/:id', db.fetchOrderById)
+app.post('/orderProducts', db.createProductInOrder)
+
 app.post('/login', passport.authenticate('local', {failureRedirect: '/'}), ((req, res) => {
   res.status(201).json(req.user)
 }))
@@ -107,10 +113,6 @@ app.post('/products', db.createProduct)
 app.put('/products/:id', db.modifyProduct)
 app.delete('/products/:id', db.removeProduct)
 
-app.get('/orders', db.fetchOrders)
-app.post('/orders', db.createOrder)
-app.get('/orders/:id', db.fetchOrderById)
-app.post('/orderProducts', db.createProductInOrder)
 
 
 app.listen(port, () => {

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header/Header";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const ProductDetails = () => {
   const { signedIn, currentUser } = useAuth();
@@ -59,9 +60,9 @@ const ProductDetails = () => {
       </div>
 
       <div className="pt-10 pl-6">
-        <a
-          href="/"
-          className="inline-flex items-center border-2 border-camel py-1 rounded-md text-camel hover:bg-white"
+        <Link
+          to={-1}
+          className="inline-flex items-center border-2 border-camel py-1 rounded-md text-camel hover:text-coffee hover:bg-camel hover:border-coffee"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +79,7 @@ const ProductDetails = () => {
             ></path>
           </svg>
           <span className="ml-1 pr-1.5 font-bold text-md">Back</span>
-        </a>
+        </Link>
       </div>
 
       <div className="flex pt-14 justify-center">
