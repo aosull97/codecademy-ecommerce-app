@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -46,4 +47,9 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
   );
+};
+
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
