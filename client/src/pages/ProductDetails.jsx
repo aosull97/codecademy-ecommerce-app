@@ -9,15 +9,22 @@ import { Link } from "react-router-dom";
 const ProductDetails = () => {
   const { signedIn, currentUser } = useAuth();
   const { addToCart } = useCart();
-
-  const [product, setProduct] = useState([]);
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { productId } = useParams();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/products/${productId}`).then((res) => {
-      setProduct(res.data[0]);
-    }).catch(error => console.error("Error fetching product details:", error));
+    setIsLoading(true);
+    axios
+      .get(`http://localhost:3000/products/${productId}`)
+      .then((res) => {
+        setProduct(res.data[0]);
+      })
+      .catch((error) =>
+        console.error("Error fetching product details:", error)
+      )
+      .finally(() => setIsLoading(false));
   }, [productId]); // Add productId to the dependency array
 
   const addItemToWishlist = (name, price, img, email) => {
@@ -36,6 +43,18 @@ const ProductDetails = () => {
       alert("Sign in to add item to wishlist");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-orange-50 h-screen font-garamond text-center p-12">
+        Loading product...
+      </div>
+    );
+  }
+
+  if (!product) {
+    return <div className="bg-orange-50 h-screen font-garamond text-center p-12">Product not found.</div>;
+  }
 
   return (
     <div className="bg-orange-50 h-screen font-garamond">

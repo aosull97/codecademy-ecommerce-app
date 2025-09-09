@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { currentUser } = useAuth();
   axios.defaults.withCredentials = true;
 
   const fetchOrders = () => {
+    setIsLoading(true);
     if (currentUser?.email) {
       axios
         .get(`http://localhost:3000/orders/${currentUser.email}`)
@@ -19,17 +21,19 @@ const Orders = () => {
         .catch((error) => {
           console.error("Error fetching users orders:", error);
           setOrders([]);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     } else {
       setOrders([]);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchOrders();
   }, [currentUser?.email]);
-
-  console.log(orders);
 
   return (
     <div className="bg-orange-50 h-screen font-garamond">
@@ -60,7 +64,13 @@ const Orders = () => {
           Your Orders
         </h1>
       </div>
-      {orders.length != 0 ? (
+      {isLoading ? (
+        <div>
+          <p className="font-garamond p-28 text-center">
+            Loading your orders...
+          </p>
+        </div>
+      ) : orders.length > 0 ? (
         <div className="px-4 sm:px-6 lg:px-8">
           <table className="w-full divide-y divide-coffee">
             <thead className="bg-almond">
