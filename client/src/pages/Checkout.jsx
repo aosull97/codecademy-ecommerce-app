@@ -11,7 +11,7 @@ const Checkout = () => {
   const [total, setTotal] = useState(0);
 
   const { currentUser } = useAuth();
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, fetchCart } = useCart();
   axios.defaults.withCredentials = true;
 
   const navigate = useNavigate();
@@ -40,6 +40,31 @@ const Checkout = () => {
   useEffect(() => {
     setTotal(deliveryTotal + subtotal);
   }, [deliveryTotal, subtotal]);
+
+    const changeQuantity = (itemId, newQuantity) => {
+    if (!itemId) {
+      console.error("Cannot change quantity without an item ID.");
+      return;
+    }
+
+    if (newQuantity <= 0) {
+      const itemToRemove = cartItems.find((item) => item.id === itemId);
+      if (itemToRemove) {
+        removeFromCart(itemToRemove.product);
+      }
+      return;
+    }
+    axios
+      .put(`http://localhost:3000/cart/${itemId}`, {
+        quantity: newQuantity,
+      })
+      .then(() => {
+        fetchCart(); // Re-fetch to update the cart state
+      })
+      .catch((error) => {
+        console.error(`Error changing quantity for item ${itemId}:`, error);
+      });
+  };
 
   const createOrder = (price) => {
     const data = {
@@ -102,7 +127,9 @@ const Checkout = () => {
           <p className="text-gray-800">
             Check your items. And select a suitable shipping method.
           </p>
+          {cartItems.length != 0 ?
           <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
+             
             {cartItems.map((checkoutItem) => (
               <div key={checkoutItem.id} className="font-garamond flex">
                 <img
@@ -114,7 +141,11 @@ const Checkout = () => {
                     {checkoutItem.product}
                   </div>
                   <div className="pt-1">£{checkoutItem.price}</div>
-                  <div className="pb-1">Quantity: {checkoutItem.quantity}</div>
+                                    <div className="pb-1 flex">
+                    <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity - 1)} className="pr-2">-</button>
+                    <div>Quantity: {checkoutItem.quantity}</div>
+                    <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity + 1)} className="pl-2">+</button>
+                    </div>
                   <button
                     onClick={() => removeFromCart(checkoutItem.product)}
                     className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
@@ -124,7 +155,17 @@ const Checkout = () => {
                 </div>
               </div>
             ))}
+          
+            <div>
+              <p className="font-garamond">No items in cart</p>
+            </div>
           </div>
+          : 
+          <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
+            <p className="font-garamond">No items in cart</p>
+          </div>
+          }
+          
 
           <p className="mt-8 text-lg font-medium ">Shipping Methods</p>
           <form className="mt-5 grid gap-6">
