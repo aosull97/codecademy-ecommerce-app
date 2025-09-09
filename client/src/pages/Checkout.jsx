@@ -127,44 +127,39 @@ const Checkout = () => {
           <p className="text-gray-800">
             Check your items. And select a suitable shipping method.
           </p>
-          {cartItems.length != 0 ?
-          <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
-             
-            {cartItems.map((checkoutItem) => (
-              <div key={checkoutItem.id} className="font-garamond flex">
-                <img
-                  src={checkoutItem.img}
-                  className="w-32 h-32  rounded-sm border-2 border-camel"
-                />
-                <div className="flex flex-col pl-4">
-                  <div className="font-semibold text-base">
-                    {checkoutItem.product}
-                  </div>
-                  <div className="pt-1">£{checkoutItem.price}</div>
-                                    <div className="pb-1 flex">
-                    <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity - 1)} className="pr-2">-</button>
-                    <div>Quantity: {checkoutItem.quantity}</div>
-                    <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity + 1)} className="pl-2">+</button>
+          {cartItems.length > 0 ? (
+            <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
+              {cartItems.map((checkoutItem) => (
+                <div key={checkoutItem.id} className="font-garamond flex">
+                  <img
+                    src={checkoutItem.img}
+                    className="w-32 h-32  rounded-sm border-2 border-camel"
+                  />
+                  <div className="flex flex-col pl-4">
+                    <div className="font-semibold text-base">
+                      {checkoutItem.product}
                     </div>
-                  <button
-                    onClick={() => removeFromCart(checkoutItem.product)}
-                    className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
-                  >
-                    Remove
-                  </button>
+                    <div className="pt-1">£{checkoutItem.price}</div>
+                    <div className="pb-1 flex">
+                      <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity - 1)} className="pr-2">-</button>
+                      <div>Quantity: {checkoutItem.quantity}</div>
+                      <button onClick={() => changeQuantity(checkoutItem.id, checkoutItem.quantity + 1)} className="pl-2">+</button>
+                    </div>
+                    <button
+                      onClick={() => removeFromCart(checkoutItem.product)}
+                      className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          
-            <div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
               <p className="font-garamond">No items in cart</p>
             </div>
-          </div>
-          : 
-          <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
-            <p className="font-garamond">No items in cart</p>
-          </div>
-          }
+          )}
           
 
           <p className="mt-8 text-lg font-medium ">Shipping Methods</p>

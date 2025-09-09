@@ -61,55 +61,29 @@ const Orders = () => {
         </h1>
       </div>
       {orders.length != 0 ? (
-        <div className="flex justify-between p-28">
-          <div className="flex flex-col">
-            <p className="font-semibold pb-4">Date</p>
-            {orders.length != 0
-              ? orders.map((orderItem) => (
-                  <div key={orderItem.id} className="">
-                    <div className="pb-2 mb-4 ">
-                      <p>{orderItem.created_at.slice(0, 10)}</p>
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
-          <div className="flex flex-col">
-            <p className="font-semibold pb-4">Order</p>
-            {orders.length != 0
-              ? orders.map((orderItem) => (
-                  <div key={orderItem.id} className="">
-                    <div className="pb-2 mb-4 ">
-                      <p>{orderItem.order}</p>
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
-          <div className="flex flex-col">
-            <p className="font-semibold pb-4">Price</p>
-            {orders.length != 0
-              ? orders.map((orderItem) => (
-                  <div key={orderItem.id} className="">
-                    <div className="pb-2 mb-4 ">
-                      <p>£{orderItem.order_price}</p>
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
-          <div className="flex flex-col">
-            <p className="font-semibold pb-4">Status</p>
-            {orders.length != 0
-              ? orders.map((orderItem) => (
-                  <div key={orderItem.id} className="">
-                    <div className="pb-2 mb-4 ">
-                      <p>{orderItem.status}</p>
-                    </div>
-                  </div>
-                ))
-              : null}
-          </div>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <table className="w-full divide-y divide-coffee">
+            <thead className="bg-almond">
+              <tr>
+                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Date</th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Order</th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {orders.map((orderItem) => (
+                <tr key={orderItem.id}>
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
+                    {orderItem.created_at.slice(0, 10)}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{orderItem.order}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">£{orderItem.order_price}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{orderItem.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div>
