@@ -5,19 +5,14 @@ CREATE TABLE "users" (
   "pwd_hash" varchar(100),
 );
 
-CREATE TABLE "order_products" (
-  "order_id" int,
-  "product_id" int,
-  "quantity" int DEFAULT 1,
-  "price" decimal(10, 2)
-);
-
 CREATE TABLE "orders" (
   "id" SERIAL PRIMARY KEY,
-  "user_id" int,
   "status" varchar(100),
-  "created_at" timestamp DEFAULT (now()),
-  "order_price" decimal(10,2)
+  "order_price" decimal(10,2),
+  "order" varchar NOT NULL,
+  "email", varchar(100)  NOT NULL,
+  "created_at" date DEFAULT (now()) NOT NULL,
+  
 );
 
 CREATE TABLE "products" (
@@ -27,7 +22,9 @@ CREATE TABLE "products" (
   "description" varchar,
   "category" varchar(100),
   "image_url" varchar(255),
-  "status" varchar(100)
+  "status" varchar(100),
+  "color" text,
+  "extra_details" text,
 );
 
 CREATE TABLE "carts" (
@@ -40,22 +37,16 @@ CREATE TABLE "carts" (
   UNIQUE(product, email)
 );
 
-CREATE TABLE "cart_products" (
-  "cart_id" int,
-  "product_id" int,
-  "quantity" int DEFAULT 1
-);
 
-ALTER TABLE "order_products" ADD FOREIGN KEY ("order_id") REFERENCES "orders" ("id");
+CREATE TABLE "wishlist" (
+  "id" SERIAL PRIMARY KEY,
+  "product" TEXT,
+  "price" DECIMAL(10, 2),
+  "img" TEXT,
+  "email" VARCHAR(100),
+  UNIQUE(product, email)
+)
 
-ALTER TABLE "order_products" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
+ALTER TABLE "orders" ADD FOREIGN KEY ("email") REFERENCES "users" ("email");
 
-ALTER TABLE "orders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "cart_products" ADD FOREIGN KEY ("cart_id") REFERENCES "carts" ("id");
-
-ALTER TABLE "cart_products" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
-
-ALTER TABLE cart_products ADD PRIMARY KEY (cart_id, product_id);
-
-ALTER TABLE order_products ADD PRIMARY KEY (order_id, product_id);

@@ -313,51 +313,7 @@ const createOrder = (request, response) => {
   })
 }
 
-//Fetches an order by it's Id
-const fetchOrderById = async (request, response) => {
-  const id = parseInt(request.params.id);
-  try {
-    const results = await pool.query(`SELECT * FROM orders
-      INNER JOIN order_products ON orders.id = order_products.order_id
-      INNER JOIN products ON order_products.product_id = products.id
-      WHERE orders.id = $1`, [id]);
-    response.status(200).json(results.rows);
-  } catch (error) {
-    console.error(`Error fetching order ${id}:`, error);
-    response.status(500).send('Server error');
-  }
-};
 
-//Adds one product to an order
-const createProductInOrder = async (request, response) => {
-  const { order_id, product_id, quantity, price } = request.body;
-  try {
-    await pool.query('INSERT INTO order_products (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4) RETURNING *', [order_id, product_id, quantity, price]);
-    response.status(201).send(`${quantity} products with id ${product_id} added to order ${order_id}`);
-  } catch (error) {
-    console.error(`Error adding product to order ${order_id}:`, error);
-    response.status(500).send('Server error');
-  }
-};
-
-
-//Fetches all products in a cart for a userId
-const fetchCartById = async (request, response) => {
-  const id = parseInt(request.params.id);
-  try {
-    // This schema seems overly complex and might not match your current 'carts' table.
-    // Sticking to the simpler `fetchCart` logic for now.
-    // If you use this function, ensure your schema (cart_products, etc.) is correct.
-    const results = await pool.query(`SELECT products.id, name, price, description, category, image_url, status, quantity FROM carts
-      INNER JOIN cart_products ON carts.id = cart_products.cart_id
-      INNER JOIN products ON cart_products.product_id = products.id
-      WHERE user_id = $1`, [id]);
-    response.status(200).json(results.rows);
-  } catch (error) {
-    console.error(`Error fetching cart by user id ${id}:`, error);
-    response.status(500).send('Server error');
-  }
-};
 
 //Creates record in the carts table for a userId with 1-1 relation
 const createCartById = async (request, response) => {
@@ -367,18 +323,6 @@ const createCartById = async (request, response) => {
     response.status(201).send(`Cart record created for user with id: ${user_id}`);
   } catch (error) {
     console.error(`Error creating cart for user ${user_id}:`, error);
-    response.status(500).send('Server error');
-  }
-};
-
-//Adds a new product of a given quantity to a cart
-const createProductInCart = async (request, response) => {
-  const {cart_id, product_id, quantity} = request.body
-  try {
-    await pool.query('INSERT INTO cart_products (cart_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *', [cart_id, product_id, quantity]);
-    response.status(201).send(`${quantity} products with id ${product_id} added to cart ${cart_id}`);
-  } catch (error) {
-    console.error(`Error creating product in cart ${cart_id}:`, error);
     response.status(500).send('Server error');
   }
 };
@@ -459,9 +403,7 @@ module.exports = {
   modifyProduct,
   removeProduct,
   fetchOrders,
-  fetchOrderById,
   addToCart,
-  createProductInOrder,
   fetchCart,
   fetchCartById,
   clearCart,
