@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/Header/Header";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 
 const ProductDetails = () => {
   const { signedIn, currentUser } = useAuth();
-  axios.defaults.withCredentials = true;
+  const { addToCart } = useCart();
 
   const [product, setProduct] = useState([]);
 
@@ -18,24 +19,6 @@ const ProductDetails = () => {
       setProduct(res.data[0]);
     }).catch(error => console.error("Error fetching product details:", error));
   }, [productId]); // Add productId to the dependency array
-
-  const addItemToCart = (name, price, img, quantity, email) => {
-    if (signedIn) {
-      const data = {
-        product: name,
-        price: price,
-        img: img,
-        quantity: quantity,
-        email: email,
-      };
-      console.log(data);
-      axios.post("http://localhost:3000/cart", data).then((response) => {
-        console.log(response.status);
-      });
-    } else {
-      alert("Sign in to add item to cart");
-    }
-  };
 
   const addItemToWishlist = (name, price, img, email) => {
     if (signedIn) {
@@ -101,13 +84,12 @@ const ProductDetails = () => {
             <div className="p-1 w-4/5 h-8 bg-camel text-center text-sm rounded-lg text-almond hover:shadow-lg">
               <button
                 onClick={() =>
-                  addItemToCart(
-                    product.name,
-                    product.price,
-                    product.image_url,
-                    1,
-                    currentUser?.email
-                  )
+                  addToCart({
+                    product: product.name,
+                    price: product.price,
+                    img: product.image_url,
+                    quantity: 1,
+                  })
                 }
               >
                 Add To Cart

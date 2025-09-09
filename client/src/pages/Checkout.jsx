@@ -1,54 +1,20 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-  const [checkoutItems, setCheckoutItems] = useState([]);
   const [deliveryTotal, setDeliveryTotal] = useState(3.95);
   const [deliveryMethod, setDeliveryMethod] = useState("standard");
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
 
   const { currentUser } = useAuth();
+  const { cartItems, removeFromCart } = useCart();
   axios.defaults.withCredentials = true;
 
   const navigate = useNavigate();
-
-  // Fetch cart items only once when the component mounts or the user changes.
-  useEffect(() => {
-    if (currentUser?.email) {
-      axios
-        .get(`http://localhost:3000/cart/${currentUser?.email}`)
-        .then((response) => {
-          setCheckoutItems(response.data);
-        });
-    }
-  }, [currentUser?.email]);
-
-  const removeCheckoutItem = (productName, userEmail) => {
-    if (!productName || !userEmail) {
-      console.error("Cannot remove item without itemId or user email.");
-      return;
-    }
-    // Use encodeURIComponent to handle special characters in product names
-    axios
-      .delete(
-        `http://localhost:3000/cart/${userEmail}/${encodeURIComponent(
-          productName
-        )}`
-      )
-      .then((response) => {
-        console.log(response.data);
-        // Correctly filter the local state by product name
-        setCheckoutItems((prevItems) =>
-          prevItems.filter((item) => item.product !== productName)
-        );
-      })
-      .catch((error) => {
-        console.error("Error deleting cart item:", error);
-      });
-  };
 
   // Update delivery cost when the delivery method changes
   useEffect(() => {
@@ -62,13 +28,13 @@ const Checkout = () => {
   // Recalculate subtotal whenever the items in the checkout change
   useEffect(() => {
     let sum = 0;
-    for (let i = 0; i < checkoutItems.length; i++) {
-      let itemQuantity = checkoutItems[i].quantity;
-      let itemPrice = checkoutItems[i].price;
+    for (let i = 0; i < cartItems.length; i++) {
+      let itemQuantity = cartItems[i].quantity;
+      let itemPrice = cartItems[i].price;
       sum += itemQuantity * itemPrice;
     }
     setSubtotal(sum);
-  }, [checkoutItems]);
+  }, [cartItems]);
 
   // Recalculate the final total when the subtotal or delivery cost changes
   useEffect(() => {
@@ -78,7 +44,7 @@ const Checkout = () => {
   const createOrder = (price) => {
     const data = {
       order_price: price,
-      order: checkoutItems.map((item) => item.product).join(", "),
+      order: cartItems.map((item) => item.product).join(", "),
       email: currentUser?.email,
     };
 
@@ -137,7 +103,7 @@ const Checkout = () => {
             Check your items. And select a suitable shipping method.
           </p>
           <div className="mt-8 space-y-3 rounded-lg bg-white px-2 py-4 sm:px-6">
-            {checkoutItems.map((checkoutItem) => (
+            {cartItems.map((checkoutItem) => (
               <div key={checkoutItem.id} className="font-garamond flex">
                 <img
                   src={checkoutItem.img}
@@ -150,12 +116,7 @@ const Checkout = () => {
                   <div className="pt-1">£{checkoutItem.price}</div>
                   <div className="pb-1">Quantity: {checkoutItem.quantity}</div>
                   <button
-                    onClick={() =>
-                      removeCheckoutItem(
-                        checkoutItem.product,
-                        currentUser?.email
-                      )
-                    }
+                    onClick={() => removeFromCart(checkoutItem.product)}
                     className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50"
                   >
                     Remove

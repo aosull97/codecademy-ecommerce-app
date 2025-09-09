@@ -1,88 +1,47 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 const Cart = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const { cartItems, removeFromCart, fetchCart } = useCart();
+  axios.defaults.withCredentials = true;
 
-    const [cartItems, setCartItems] = useState([])
-    const navigate = useNavigate()
-
-    const { currentUser } = useAuth();
-    axios.defaults.withCredentials = true;
-
-    const fetchCartItems = () => {
-      if (currentUser?.email) {
-        axios.get(`http://localhost:3000/cart/${currentUser.email}`)
-          .then((response) => {
-            setCartItems(response.data);
-          })
-          .catch(error => {
-            console.error('Error fetching cart:', error);
-            setCartItems([]);
-          });
-      } else {
-        setCartItems([]);
-      }
-    };
-
-    useEffect(() => {
-      fetchCartItems();
-    }, [currentUser?.email])
-
-
-    const removeCartItem = (productName, userEmail) => {
-      if (!productName || !userEmail) {
-        console.error("Cannot remove item without itemId or user email.");
-        return;
-      }
-      // Use encodeURIComponent to handle special characters in product names
-      axios.delete(`http://localhost:3000/cart/${userEmail}/${encodeURIComponent(productName)}`)
-      .then(response => {
-        console.log(response.data);
-        // Correctly filter the local state by product name
-        setCartItems(prevItems => prevItems.filter(item => item.product !== productName));
-      })
-      .catch(error => {
-        console.error('Error deleting cart item:', error);
-      });
-    }
+  useEffect(() => {
+    fetchCart();
+  }, [currentUser?.email, fetchCart]);
 
     const goToCheckout = () => {
       navigate("/checkout")
     }
 
-    const changeQuantity = (itemId, newQuantity) => {
-      console.log(itemId, newQuantity)
-      if (!itemId) {
-        console.error("Cannot change quantity without an item ID.");
-        return;
-      }
-
-      if (newQuantity <= 0) {
-        const itemToRemove = cartItems.find(item => item.id === itemId);
-        if (itemToRemove) {
-          removeCartItem(itemToRemove.product, currentUser?.email);
-        }
-        return;
-      }
-        axios.put(`http://localhost:3000/cart/${itemId}`, {
-          quantity: newQuantity
-        })
-        .then((response) => {
-          console.log(response.status, response.data, ` item id ${itemId}`);
-          setCartItems(prevItems =>
-            prevItems.map(item =>
-              item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-          );
-      })
-      .catch(error => {
-          console.error(`Error changing quantity for item ${itemId}:`, error);
-        })
+  const changeQuantity = (itemId, newQuantity) => {
+    if (!itemId) {
+      console.error("Cannot change quantity without an item ID.");
+      return;
     }
 
-    
+    if (newQuantity <= 0) {
+      const itemToRemove = cartItems.find((item) => item.id === itemId);
+      if (itemToRemove) {
+        removeFromCart(itemToRemove.product);
+      }
+      return;
+    }
+    axios
+      .put(`http://localhost:3000/cart/${itemId}`, {
+        quantity: newQuantity,
+      })
+      .then(() => {
+        fetchCart(); // Re-fetch to update the cart state
+      })
+      .catch((error) => {
+        console.error(`Error changing quantity for item ${itemId}:`, error);
+      });
+  };
 
   return (
     <div className="absolute inset-y-28 overflow-x-hidden right-6 w-1/4 overflow-scroll border-2 border-coffee grid grid-cols-1 gap-y-8 justify-items-center rounded-md p-4 bg-almond m--3">
@@ -105,7 +64,7 @@ const Cart = () => {
                     <div>Quantity: {cartItem.quantity}</div>
                     <button onClick={() => changeQuantity(cartItem.id, cartItem.quantity + 1)} className="pl-2">+</button>
                     </div>
-                  <button onClick={() => removeCartItem(cartItem.product, currentUser?.email)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
+                  <button onClick={() => removeFromCart(cartItem.product)}  className="border-2 px-1 border-orange-50 rounded-md hover:bg-orange-50">Remove</button>
                 </div>
               </div>
         )

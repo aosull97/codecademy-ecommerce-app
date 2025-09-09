@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
-import axios from "axios";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 const Products = ({category}) => {
   const [products, setProducts] = useState([]);
-  const { signedIn, currentUser } = useAuth();
-
-  console.log(currentUser?.email)
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -21,31 +18,6 @@ const Products = ({category}) => {
       .then((result) => setProducts(result))
       .catch((e) => console.log(e));
   };
-
-  const addItemToCart = (name, price, img, quantity, email) => {
-
-    if(signedIn) {
-
-    const data = {
-      product: name,
-      price: price,
-      img: img, 
-      quantity: quantity,
-      email: email,
-
-  }
-    console.log(data)
-    axios.post("http://localhost:3000/cart", data).then((response) => {
-      console.log(response.status)
-    }
-  )
-
-} else {
-  alert("Sign in to add item to cart")
-}
-
-}
-
 
   return category !== "All" ? (
     <div>
@@ -61,7 +33,14 @@ const Products = ({category}) => {
                 <Link to={"/products/" + product.id }><div className="font-semibold text-base hover:underline cursor-pointer">{product.name}</div></Link>
                 <div className="text-sm">{product.description}</div>
                 <div className="pt-1">£{product.price}</div>
-                <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1, currentUser?.email)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
+                <button onClick={() => addToCart({
+                  product: product.name,
+                  price: product.price,
+                  img: product.image_url,
+                  quantity: 1,
+                })} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">
+                  Add
+                </button>
               </div>
             )
         )}
@@ -80,7 +59,14 @@ const Products = ({category}) => {
           </Link>
           <div className="text-sm">{product.description}</div>
           <div className="pt-1">£{product.price}</div>
-          <button onClick={() => addItemToCart(product.name, product.price, product.image_url, 1, currentUser?.email)} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">Add</button>
+          <button onClick={() => addToCart({
+            product: product.name,
+            price: product.price,
+            img: product.image_url,
+            quantity: 1,
+          })} className="border-2 hover:shadow-lg transition-shadow border-camel mt-2 px-1 text-sm bg-orange-50 rounded-md">
+            Add
+          </button>
         </div>
       ))}
     </div>
