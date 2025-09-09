@@ -61,7 +61,7 @@ Follow these instructions to get a copy of the project up and running on your lo
     -   Set up your PostgreSQL database and run the necessary SQL scripts to create the tables.
     -   Start the backend server:
         ```sh
-        npm start
+        node server.js
         ```
         The API will be running on `http://localhost:3000`.
 
